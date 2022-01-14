@@ -4,7 +4,7 @@ Waitress$new("#plot")$auto(20, 2000)
 
 output$report <- downloadHandler(
   # For PDF output, change this to "report.pdf"
-  filename = "report.html",
+  filename = "Student_Survey_Indicator_Analysis.html",
   content = function(file) {
     # Copy the report file to a temporary directory before processing it, in
     # case we don't have write permissions to the current working dir (which

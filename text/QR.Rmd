@@ -1,0 +1,10 @@
+---
+title: "QR"
+author: "Blaz"
+date: "9/5/2021"
+output: html_document
+---
+
+### **Quantitative Reasoning**
+
+These questions explore students' opportunities to develop their skills to reason quantitatively -- to evaluate, support or critique arguments using numerical and statistical information.

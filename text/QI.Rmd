@@ -1,0 +1,10 @@
+---
+title: "QI"
+author: "Blaz"
+date: "9/5/2021"
+output: html_document
+---
+
+### **Quality of Interactions**
+
+These questions explore student experiences of supportive relationships with a range of other people and roles on campus, thereby contributing to students' ability to find assistance when needed and to learn from and with those around them. Not applicable is available as a response option. 'Not applicable' responses have been removed from these results.

@@ -1,0 +1,13 @@
+name: StudentSurveyReporteR
+title: StudentSurveyReporteR
+username:
+account: podobnik
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4599852
+bundleId: 5469249
+url: https://podobnik.shinyapps.io/StudentSurveyReporteR/
+when: 1642180636.36802
+lastSyncTime: 1642180636.36803
+asMultiple: FALSE
+asStatic: FALSE

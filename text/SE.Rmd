@@ -1,0 +1,11 @@
+---
+title: "SE"
+author: "Blaz"
+date: "9/5/2021"
+output: html_document
+params:
+  n: NA
+---
+### **Supportive Environment**
+
+These questions explore students' perceptions of how much an institution emphasises services and activities that support their learning and development.

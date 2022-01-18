@@ -32,12 +32,12 @@ library(reactable)
 library(naniar)
 library(gt)
 
-#Data <- read_excel(params$n, sheet = "Data")
-#ngramnum<- params$obs
-Data <- read_excel("/Users/blazpodobnik/Documents/TestFile.xlsx", sheet = "Data")
+Data <- read_excel(params$n, sheet = "Data")
+ngramnum<- params$obs
+#Data <- read_excel("/Users/blazpodobnik/Documents/TestFile.xlsx", sheet = "Data")
 #Data <- read_excel("/Users/blazpodobnik/Desktop/Tccccest-Mary Immaculate College, Limerick Data File 2021.xlsx", sheet = "Data")
 
-ngramnum<-5
+#ngramnum<-5
 # Data<-Data %>% mutate(Group = ifelse(grepl("BA", courseCd), "BA",
 #                                                                      ifelse(grepl("BE", courseCd), "BE", "Other")))
 #   

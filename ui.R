@@ -54,11 +54,24 @@ shinyUI(tagList(
                             #tags$hr(),
                             plotOutput("radarplot", height = "600px" ),
                             tags$br(),
-                            reactableOutput("table1"),
+                            fluidRow(
+                                    column(2),
+                                    column(8,
+                                    reactableOutput("table1"),
+                                    column(2))),
+
                             tags$br(),
-                            plotOutput("plot12"),
+                           # plotOutput("plot12", width = "70%" ),
                             tags$br(),
-                            tags$br()
+                            tags$br(),
+                            
+                            fluidRow(
+                              column(2),
+                              column(8,
+                                     plotOutput('plot12')),
+                              column(2))
+                            
+                            
       
                    ),
                    tabPanel("Supportive Environment",

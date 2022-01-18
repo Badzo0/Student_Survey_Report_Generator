@@ -34,7 +34,10 @@ output$table1 <- renderReactable({
   BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
   #Create a table
   reactable(
-    transpose,compact = TRUE,
+    transpose,compact = F,
+    fullWidth = T,
+    columns = list(
+      .rownames = colDef(minWidth = 300)),
     defaultColDef = colDef(
       style = function(value) {
         if (!is.numeric(value)) return()
@@ -167,6 +170,7 @@ output$radarplot <- renderPlot({
   
   df3<-data.frame(rbind(rep(60, 8), rep(0, 8),avg,
                         df3 ))%>% round(0)
+  print(df3)
   names(df3)<- c(
     CL="Collaborative Learning",
     ET="Effective Teaching Practices",
@@ -178,7 +182,7 @@ output$radarplot <- renderPlot({
     SE="Supportive Environment",
     SF="Student-Faculty Interaction"
   )
-print(df3)
+
   # Produce a radar-chart
   radarchart(
     df3,

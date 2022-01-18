@@ -5,9 +5,9 @@ account: podobnik
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4599852
-bundleId: 5469787
+bundleId: 5481470
 url: https://podobnik.shinyapps.io/StudentSurveyReporteR/
-when: 1642191039.16586
-lastSyncTime: 1642191039.16587
+when: 1642521817.95259
+lastSyncTime: 1642521817.9526
 asMultiple: FALSE
 asStatic: FALSE

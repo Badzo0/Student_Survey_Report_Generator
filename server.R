@@ -8,6 +8,7 @@ library(plyr)
 library(naniar)
 library(shinycssloaders)
 library(waiter)
+library(fmsb)
 df<-NULL
 source('functions.R', local = TRUE)
 shinyServer(function(input, output, session) {

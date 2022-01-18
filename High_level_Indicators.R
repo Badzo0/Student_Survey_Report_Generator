@@ -136,3 +136,70 @@ output$plot12 <- renderPlot({
     scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))
 })
 
+
+#-------------Radarchart--------
+
+output$radarplot <- renderPlot({
+  if(is.null(input$inSelect)==T ) Data=df()
+  else Data= df() %>%  filter(CourseNm %in% input$inSelect )
+
+  avg<-data.frame(
+    stringsAsFactors = FALSE,
+    rowname = c("HO","HO","HO","RI",
+                "RI","RI","QR","QR","QR","LS","LS","LS","CL","CL",
+                "CL","SF","SF","SF","ET","ET","ET","QI","QI",
+                "QI","SE","SE","SE"),
+    name = c("PGT","Y1","YF","PGT",
+             "Y1","YF","PGT","Y1","YF","PGT","Y1","YF","PGT",
+             "Y1","YF","PGT","Y1","YF","PGT","Y1","YF",
+             "PGT","Y1","YF","PGT","Y1","YF"),
+    value2 = c(30.58333,29.6,28.23077,
+               16.3081,17.944,15.63492,32.551,34.82828,
+               33,45.034014,37.626263,32.537634,24.4118,
+               15.40845,34.29167,13.25,8.695,10.193548,46.361702,
+               30.09677,38.38462,30.15789,28.5,37.9,
+               18.94595,24.90012,18.94595)
+  )
+  
+  df3<-Data %>%  select( "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>%  dplyr::summarise(across(1:9,~ mean(.x, na.rm = TRUE)))
+  #df3<-column_to_rownames(df3, "study_group")
+  avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)
+  
+  df3<-data.frame(rbind(rep(60, 8), rep(0, 8),avg,
+                        df3 ))%>% round(0)
+  names(df3)<- c(
+    CL="Collaborative Learning",
+    ET="Effective Teaching Practices",
+    HO="Higher-Order Learning",
+    LS="Learning Strategies",
+    QI="Quality of Interactions",
+    QR="Quantitative Reasoning",
+    RI="Reflective and Integrative Learning",
+    SE="Supportive Environment",
+    SF="Student-Faculty Interaction"
+  )
+print(df3)
+  # Produce a radar-chart
+  radarchart(
+    df3,
+    pfcol = c("#99999980",NA),
+    pcol= c(NA,2), plty = 1, plwd = 2,
+    axistype = 4,
+    title = "Institutional profile", caxislabels = c(0,15, 30, 45, 60),
+    axislabcol = "black"
+  )
+  legend(
+    x = "bottom", legend = c("Nat. Average","Institution"), horiz = T,
+    bty = "n", pch = 20 , col = c("Grey", "Red"),
+    text.col = "black", cex = 1, pt.cex = 1.5
+  )
+  
+  
+})
+
+
+
+
+
+
+

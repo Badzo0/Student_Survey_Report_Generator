@@ -52,9 +52,12 @@ shinyUI(tagList(
                             reactableOutput("contents2"),
                             tags$br(),tags$br(),tags$br(),
                             #tags$hr(),
+                            plotOutput("radarplot", height = "600px" ),
+                            tags$br(),
                             reactableOutput("table1"),
                             tags$br(),
                             plotOutput("plot12"),
+                            tags$br(),
                             tags$br()
       
                    ),

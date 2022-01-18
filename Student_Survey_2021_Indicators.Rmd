@@ -1292,7 +1292,7 @@ library("naniar")
 
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # Activate reshape2 and ggalluvial
 library("reshape2")
 library("ggalluvial")
@@ -1350,7 +1350,7 @@ ggplot(ST082Q01,
   theme_minimal()
 ```
 
-```{r fig.height=10, fig.width=10}
+```{r eval=FALSE, fig.height=10, fig.width=10, include=FALSE}
   gg_miss_upset(QI, nsets = 200)
 
 ```

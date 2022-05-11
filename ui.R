@@ -41,6 +41,8 @@ shinyUI(tagList(
                             useWaitress(color = "#F4DD77"),
                             pickerInput("inSelect", "Select input",
                                         c(""), options = list(`actions-box` = TRUE,liveSearch =T),multiple = T),
+                            pickerInput("selectreport", "Select Report",
+                                        c("Student_Survey_2021_Indicators","Test2"),multiple = F),
                             numericInput("obs", "Number of N-grams (Qualitative):", 4, min = 1, max = 50),
                             downloadButton("report", "Download Report"),
                             

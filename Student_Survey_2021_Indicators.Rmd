@@ -53,7 +53,7 @@ ngramnum<- params$obs
 ```
 
 ```{r}
-High_level<-Data %>%  select(study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>% group_by(study_group) %>%  dplyr::summarise(across(1:9,~ mean(.x, na.rm = TRUE)))
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>% dplyr::mutate(across(2:10, ~ . * Weighting_var))%>% select(-Weighting_var) %>%   dplyr::summarise(across(1:9,~ mean(.x, na.rm = TRUE)))
 
 names(High_level)<- c(
   study_group="study_group",

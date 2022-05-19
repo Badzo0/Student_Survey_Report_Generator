@@ -21,25 +21,31 @@ shinyServer(function(input, output, session) {
     df <- reactive({ 
         req(input$file1)
         read_excel(input$file1$datapath, sheet = "Data")
-        })
-
+    })
+    
     #-------------- Logging for troubleshooting--------------
     observe({
         print(input$file1)
-   })
+    })
     observe({
-
+        
         print(input$inSelect)
     })
     observe({
         print("N-grams:")
         print(input$obs)
     })
+    
+    
+    
     #-------------- end --------------
+    
+    
+    
     observeEvent(input$file1, {
         names<-df() %>% group_by(CourseNm) %>% tally() %>% filter(n>20) %>%  select(CourseNm)
-
-       # names <- unique(df()$CourseNm)        
+        
+        # names <- unique(df()$CourseNm)        
         # Method 1
         updatePickerInput(session = session, inputId = "inSelect",
                           choices = names)
@@ -69,7 +75,7 @@ shinyServer(function(input, output, session) {
         )
         
     })
-
+    
     
     output$contents2 <- renderReactable({
         if(is.null(input$inSelect)==T ) Data=df()
@@ -77,6 +83,11 @@ shinyServer(function(input, output, session) {
         Data %>% tally() %>% reactable() 
         
     })
+    
+    
+    
+    
+    
     
     #DOWNLOAD HANDLER   
     source('download_handler.R', local = TRUE)
@@ -98,7 +109,7 @@ shinyServer(function(input, output, session) {
     
     
     
-
+    
     
     
     

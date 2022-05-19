@@ -1,55 +1,55 @@
 
 observe({
-output$table1 <- renderReactable({
-  req(!is.null(df()))
-  #browser()
-  if(is.null(input$inSelect)==T ) Data=df()
-  else Data= df() %>%  filter(CourseNm %in% input$inSelect )
-  print(input$file1$name)
+  output$table1 <- renderReactable({
+    req(!is.null(df()))
+    #browser()
+    if(is.null(input$inSelect)==T ) Data=df()
+    else Data= df() %>%  filter(CourseNm %in% input$inSelect )
+    print(input$file1$name)
     
     
     
     
     
     
-  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>%   dplyr::summarise(across(1:9,~ mean(.x, na.rm = TRUE)))
-  names(High_level)<- c(
-    study_group="study_group",
-    HO="Higher-Order Learning",
-    RI="Reflective and Integrative Learning",
-    QR="Quantitative Reasoning",
-    LS="Learning Strategies",
-    CL="Collaborative Learning",
-    SF="Student-Faculty Interaction",
-    ET="Effective Teaching Practices",
-    QI="Quality of Interactions",
-    SE="Supportive Environment"
-  )
-  High_level<-as.data.frame(High_level)
-  rownames(High_level) <- High_level$study_group
-  High_level$study_group <- NULL
-  transpose <- as.data.frame(t(as.matrix(High_level)))
-  #transpose <- transpose(High_level)
-  #Color function
-  BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
-  #Create a table
-  reactable(
-    transpose,compact = F,
-    fullWidth = T,
-    columns = list(
-      .rownames = colDef(minWidth = 300)),
-    defaultColDef = colDef(
-      style = function(value) {
-        if (!is.numeric(value)) return()
-        normalized <- (value - min(transpose[1:length(transpose)])) / (max(transpose[1:length(transpose)]) - min(transpose[1:length(transpose)]))
-        color <- BuYlRd(normalized)
-        list(background = color)
-      },
-      format = colFormat(percent = F, digits = 1),
-      minWidth = 50
+    High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>%   dplyr::summarise(across(1:9,~ mean(.x, na.rm = TRUE)))
+    names(High_level)<- c(
+      study_group="study_group",
+      HO="Higher-Order Learning",
+      RI="Reflective and Integrative Learning",
+      QR="Quantitative Reasoning",
+      LS="Learning Strategies",
+      CL="Collaborative Learning",
+      SF="Student-Faculty Interaction",
+      ET="Effective Teaching Practices",
+      QI="Quality of Interactions",
+      SE="Supportive Environment"
     )
-  )
-})
+    High_level<-as.data.frame(High_level)
+    rownames(High_level) <- High_level$study_group
+    High_level$study_group <- NULL
+    transpose <- as.data.frame(t(as.matrix(High_level)))
+    #transpose <- transpose(High_level)
+    #Color function
+    BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
+    #Create a table
+    reactable(
+      transpose,compact = F,
+      fullWidth = T,
+      columns = list(
+        .rownames = colDef(minWidth = 300)),
+      defaultColDef = colDef(
+        style = function(value) {
+          if (!is.numeric(value)) return()
+          normalized <- (value - min(transpose[1:length(transpose)])) / (max(transpose[1:length(transpose)]) - min(transpose[1:length(transpose)]))
+          color <- BuYlRd(normalized)
+          list(background = color)
+        },
+        format = colFormat(percent = F, digits = 1),
+        minWidth = 50
+      )
+    )
+  })
 })
 
 
@@ -81,14 +81,14 @@ output$plot12 <- renderPlot({
   
   #Color function
   BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
-
+  
   
   
   transpose
   transpose<-transpose %>% rownames_to_column() %>% 
     pivot_longer(.,names(transpose))
   
-
+  
   
   
   # avg<-data.frame(
@@ -153,8 +153,8 @@ output$plot12 <- renderPlot({
 output$radarplot <- renderPlot({
   if(is.null(input$inSelect)==T ) Data=df()
   else Data= df() %>%  filter(CourseNm %in% input$inSelect )
-
-
+  
+  
   
   df3<-Data %>%  select( "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>%  dplyr::summarise(across(1:9,~ mean(.x, na.rm = TRUE)))
   #df3<-column_to_rownames(df3, "study_group")
@@ -164,15 +164,15 @@ output$radarplot <- renderPlot({
   
   
   avg<-  data.frame(
-          HO = c(34.7),
-          RI = c(30.2),
-          QR = c(19.2),
-          LS = c(31.3),
-          CL = c(25.4),
-          SF = c(10.2),
-          ET = c(32.5),
-          QI = c(30.2),
-          SE = c(24.1)
+    HO = c(34.7),
+    RI = c(30.2),
+    QR = c(19.2),
+    LS = c(31.3),
+    CL = c(25.4),
+    SF = c(10.2),
+    ET = c(32.5),
+    QI = c(30.2),
+    SE = c(24.1)
   )
   
   df3<-data.frame(rbind(rep(60, 8), rep(0, 8),avg,
@@ -190,7 +190,7 @@ output$radarplot <- renderPlot({
     SE="Supportive Environment"
     
   )
-
+  
   # Produce a radar-chart
   radarchart(
     df3,

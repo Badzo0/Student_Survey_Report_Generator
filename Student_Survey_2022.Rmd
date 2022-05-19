@@ -41,20 +41,10 @@ library(fmsb)
 
 Data <- read_excel(params$n, sheet = "Data")
 ngramnum<- params$obs
-#Data <- read_excel("/Users/blazpodobnik/Documents/TestFile.xlsx", sheet = "Data")
-#Data <- read_excel("/Users/blazpodobnik/Desktop/Tccccest-Mary Immaculate College, Limerick Data File 2021.xlsx", sheet = "Data")
-
 
 
 Data <-  read_excel("~/Downloads/Mary Immaculate College Data File 2022.xlsx", 
     sheet = "Data")
-
-#ngramnum<-5
-# Data<-Data %>% mutate(Group = ifelse(grepl("BA", courseCd), "BA",
-#                                                                      ifelse(grepl("BE", courseCd), "BE", "Other")))
-#   
-#   Data$AcUnit1<- dplyr::recode(Data$AcUnit1,"College of Education"="Faculty of Education",
-#                                "College of Humanities"="Faculty of Arts")
   
   
 
@@ -81,10 +71,6 @@ names(High_level)<- c(
   LC="Learning, Creative and Social Skills"
 )
 
-
-#put into percentages
-#f <- function(x) x/100
-#High_level[-1] <- sapply(High_level[-1], function(x) round(f(x), 2))
 
 
 #Transpose
@@ -135,9 +121,6 @@ names(High_level)<- c(
 )
 
 
-#put into percentages
-#f <- function(x) x/100
-#High_level[-1] <- sapply(High_level[-1], function(x) round(f(x), 2))
 
 
 #Transpose
@@ -175,10 +158,7 @@ reactable(
 High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
 
   
-  #put into percentages
-  #f <- function(x) x/100
-  #High_level[-1] <- sapply(High_level[-1], function(x) round(f(x), 2))
-  
+ 
   
   #Transpose
   High_level<-as.data.frame(High_level)
@@ -870,19 +850,6 @@ QR_items_likert_1 <-as.data.frame(QR_items) %>%
 a111 <- likert(QR_items_likert, grouping=Data$study_group)
 
 
-# xtable
-# xtable(l24g) # TODO: Doesn't work!
-
-# Plots
-
-
-
-
-
-
-
-## With only one varaible
-
 
 
 ```
@@ -1022,18 +989,6 @@ SF_items_likert_1 <-as.data.frame(SF_items) %>%
 a111 <- likert(SF_items_likert, grouping=Data$study_group)
 
 
-# xtable
-# xtable(l24g) # TODO: Doesn't work!
-
-# Plots
-
-
-
-
-
-
-
-## With only one varaible
 
 
 

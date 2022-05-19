@@ -1,0 +1,1554 @@
+---
+title: "Student Survey.IE - Indicator Analysis 2022"
+output: html_document
+params:
+  n: NA
+  obs: NA
+---
+
+#  {.tabset .tabset-fade}
+
+## General
+
+### ***Indicator Overview***
+
+```{r}
+```
+
+```{r}
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+  error = TRUE
+)
+```
+
+```{r}
+
+library(readxl)
+library(tidyverse)
+library(likert)
+library(plyr)
+library(data.table)
+library(reactable)
+library(naniar)
+library(gt)
+library(fmsb)
+
+Data <- read_excel(params$n, sheet = "Data")
+ngramnum<- params$obs
+#Data <- read_excel("/Users/blazpodobnik/Documents/TestFile.xlsx", sheet = "Data")
+#Data <- read_excel("/Users/blazpodobnik/Desktop/Tccccest-Mary Immaculate College, Limerick Data File 2021.xlsx", sheet = "Data")
+
+
+
+Data <-  read_excel("~/Downloads/Mary Immaculate College Data File 2022.xlsx", 
+    sheet = "Data")
+
+#ngramnum<-5
+# Data<-Data %>% mutate(Group = ifelse(grepl("BA", courseCd), "BA",
+#                                                                      ifelse(grepl("BE", courseCd), "BE", "Other")))
+#   
+#   Data$AcUnit1<- dplyr::recode(Data$AcUnit1,"College of Education"="Faculty of Education",
+#                                "College of Humanities"="Faculty of Arts")
+  
+  
+
+    percent <- function(x, digits = 1, format = "f", ...) {
+        paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
+    }
+
+```
+
+```{r}
+    High_level<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%   dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+
+
+names(High_level)<- c(
+  HO="Higher-Order Learning",
+  RI="Reflective and Integrative Learning",
+  QR="Quantitative Reasoning",
+  LS="Learning Strategies",
+  CL="Collaborative Learning",
+  SF="Student-Faculty Interaction",
+  ET="Effective Teaching Practices",
+  QI="Quality of Interactions",
+  SE="Supportive Environment",
+  LC="Learning, Creative and Social Skills"
+)
+
+
+#put into percentages
+#f <- function(x) x/100
+#High_level[-1] <- sapply(High_level[-1], function(x) round(f(x), 2))
+
+
+#Transpose
+High_level<-as.data.frame(High_level)
+rownames(High_level) <- High_level$study_group
+High_level$study_group <- NULL
+transpose <- as.data.frame(t(as.matrix(High_level)))
+transpose <- transpose(High_level)
+rownames(transpose) <- colnames(High_level)
+colnames(transpose) <- rownames(High_level)
+
+
+#Color function
+BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
+#Create a table
+reactable(
+  transpose,compact = TRUE,
+  defaultColDef = colDef(
+    style = function(value) {
+      if (!is.numeric(value)) return()
+      normalized <- (value - min(transpose[1])) / (max(transpose[1]) - min(transpose[1]))
+      color <- BuYlRd(normalized)
+      list(background = color)
+    },
+    format = colFormat(percent = F, digits = 1),
+    minWidth = 50
+  )
+)
+
+
+```
+
+```{r}
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+
+names(High_level)<- c(
+  study_group="study_group",
+  HO="Higher-Order Learning",
+  RI="Reflective and Integrative Learning",
+  QR="Quantitative Reasoning",
+  LS="Learning Strategies",
+  CL="Collaborative Learning",
+  SF="Student-Faculty Interaction",
+  ET="Effective Teaching Practices",
+  QI="Quality of Interactions",
+  SE="Supportive Environment",
+  LC="Learning, Creative and Social Skills"
+)
+
+
+#put into percentages
+#f <- function(x) x/100
+#High_level[-1] <- sapply(High_level[-1], function(x) round(f(x), 2))
+
+
+#Transpose
+High_level<-as.data.frame(High_level)
+rownames(High_level) <- High_level$study_group
+High_level$study_group <- NULL
+transpose <- as.data.frame(t(as.matrix(High_level)))
+transpose <- transpose(High_level)
+rownames(transpose) <- colnames(High_level)
+colnames(transpose) <- rownames(High_level)
+
+
+#Color function
+BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
+#Create a table
+reactable(
+  transpose,compact = TRUE,
+  defaultColDef = colDef(
+    style = function(value) {
+      if (!is.numeric(value)) return()
+      normalized <- (value - min(transpose[1:3])) / (max(transpose[1:3]) - min(transpose[1:3]))
+      color <- BuYlRd(normalized)
+      list(background = color)
+    },
+    format = colFormat(percent = F, digits = 1),
+    minWidth = 50
+  )
+)
+
+
+```
+
+```{r fig.height=4, fig.width=10}
+
+High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+
+  
+  #put into percentages
+  #f <- function(x) x/100
+  #High_level[-1] <- sapply(High_level[-1], function(x) round(f(x), 2))
+  
+  
+  #Transpose
+  High_level<-as.data.frame(High_level)
+  rownames(High_level) <- High_level$study_group
+  High_level$study_group <- NULL
+  transpose <- as.data.frame(t(as.matrix(High_level)))
+  #transpose <- transpose(High_level)
+  rownames(transpose) <- colnames(High_level)
+  colnames(transpose) <- rownames(High_level)
+  
+  
+  #Color function
+  BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
+
+  
+  
+  transpose<-transpose %>% rownames_to_column() %>% 
+    pivot_longer(.,names(transpose))
+  
+
+  
+  
+  # avg<-data.frame(
+  #   stringsAsFactors = FALSE,
+  #   rowname = c("HO","HO","HO","RI",
+  #               "RI","RI","QR","QR","QR","LS","LS","LS","CL","CL",
+  #               "CL","SF","SF","SF","ET","ET","ET","QI","QI",
+  #               "QI","SE","SE","SE"),
+  #   name = c("PGT","Y1","YF","PGT",
+  #            "Y1","YF","PGT","Y1","YF","PGT","Y1","YF","PGT",
+  #            "Y1","YF","PGT","Y1","YF","PGT","Y1","YF",
+  #            "PGT","Y1","YF","PGT","Y1","YF"),
+  #   value2 = c(30.58333,29.6,28.23077,
+  #              16.3081,17.944,15.63492,32.551,34.82828,
+  #              33,45.034014,37.626263,32.537634,24.4118,
+  #              15.40845,34.29167,13.25,8.695,10.193548,46.361702,
+  #              30.09677,38.38462,30.15789,28.5,37.9,
+  #              18.94595,24.90012,18.94595)
+  # )
+  # 
+  avg<- data.frame(
+    stringsAsFactors = FALSE,
+    rowname = c("HO", "RI", "QR", "LS", "CL", "SF", "ET", "QI", "SE"),
+    PGT = c(38.6, 33.9, 21.6, 34.4, 24.6, 12.3, 34.7, 31.7, 23.2),
+    YF = c(34.2, 31.7, 21.7, 30.9, 31.0, 15.1, 31.8, 36.9, 23.5),
+    Y1 = c(33.5, 28.6, 17.5, 30.6, 23.6, 8.1, 32.9, 29.5, 24.8)
+  )
+  
+  
+  avg<-data.frame(
+    stringsAsFactors = FALSE,
+    rowname = c("HO", "RI", "QR", "LS", "CL", "SF", "ET", "QI", "SE","LC"),
+            Y1 = c(33.53,30.45,19.24,31.06,28.49,10.9,
+                   32.6,38.54,29.91,31.59),
+            YF = c(34.21,31.71,21.71,30.96,30.96,
+                   15.05,31.79,36.89,26.21,33.9),
+           PGT = c(38.24,35.48,23.05,34.86,28.17,15.08,35.54,40.02,28.23,35.02)
+  )
+  
+  
+  
+  
+  
+  
+  avg<-avg %>% gather(key="name",value="value2", -rowname)
+  
+  
+  transpose<-merge(x = transpose, y = avg, by = c("rowname","name"), all.x = TRUE)
+  
+  
+  
+  options(scipen=999)
+  
+  transpose<-transpose %>% mutate(diff=value-value2)
+  
+  transpose$rowname<-recode_factor(transpose$rowname,
+                                   HO="Higher-Order Learning",
+                                   RI="Reflective and Integrative Learning",
+                                   QR="Quantitative Reasoning",
+                                   LS="Learning Strategies",
+                                   CL="Collaborative Learning",
+                                   SF="Student-Faculty Interaction",
+                                   ET="Effective Teaching Practices",
+                                   QI="Quality of Interactions",
+                                   SE="Supportive Environment",
+                                  LC="Learning, Creative and Social Skills"
+  )
+  
+  ggplot(transpose,aes(x=factor(rowname), y=diff, fill=name))+ geom_bar( stat='identity', position=position_dodge())+
+    theme_bw()+  xlab("Indicators")+
+    theme(axis.text.x=element_text(angle=45, hjust=1, size=8))+
+    facet_grid(cols=vars(rowname),scales = "free_x")+
+    geom_text(aes(label=sprintf("%2.1f", diff)), angle=90,position = position_dodge(width = .9),size=3)+ggtitle("Difference from national Average")+
+    geom_hline(yintercept=0)+
+    scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+      theme(panel.grid.major = element_blank(),
+            strip.text.x = element_blank())
+    
+    
+    theme(panel.grid.major.x = element_line(color = "red",
+                                          size = 0.5,
+                                          linetype = 2))
+
+
+
+```
+
+```{r fig.height=10, fig.width=10}
+
+  df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+    #df3<-column_to_rownames(df3, "study_group")
+  #avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)
+  
+  
+  
+  
+  avg<-  data.frame(
+          HO = c(34.88),
+          RI = c(32.01),
+          QR = c(20.92),
+          LS = c(31.94),
+          CL = c(29.17),
+          SF = c(13.18),
+          ET = c(33.06),
+          QI = c(38.35),
+          SE = c(28.35),
+          LC = c(33.14)
+  )
+  
+  df3<-data.frame(rbind(rep(40, 10), rep(0, 10),avg,
+                        df3 ))%>% round(0)
+   names(df3)<- c(
+    HO="Higher-Order Learning",
+    RI="Reflective and Integrative Learning",
+    QR="Quantitative Reasoning",
+    LS="Learning Strategies",
+    CL="Collaborative Learning",
+    SF="Student-Faculty Interaction",
+    ET="Effective Teaching Practices",
+    QI="Quality of Interactions",
+    SE="Supportive Environment",
+    LC="Learning, Creative and Social Skills"
+
+    
+  )
+
+  # Produce a radar-chart
+  radarchart(
+    df3,
+    pfcol = c("#c1dfea",NA),
+    pcol= c(NA,"#ff9248"), plty = 1, plwd = 5,
+    axistype = 4,
+    title = "Institutional profile", caxislabels = c(0,10, 20, 30, 40),
+    axislabcol = "black"
+  )
+  legend(
+    x = "bottom", legend = c("Nat. Average","Institution"), horiz = T,
+    bty = "n", pch = 20 , col = c("Lightblue", "Orange"),
+    text.col = "black", cex = 1, pt.cex = 1.5
+  )
+```
+
+
+
+## Qualitative Analysis
+
+### ***Qualitative Analysis - What does your institution do best to engage students in learning?***
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+
+Question<-"best_aspects"
+
+library(tidytext)
+
+library(ggraph)
+library(igraph)
+library(tidyr)
+library(dplyr)
+
+Q39<-Data  %>%  
+  filter( !is.na(`best_aspects`)) %>% select(`study_group`,`best_aspects`)
+
+
+Q39_bigrams <- Q39 %>%
+  unnest_tokens(bigram, Question, token = "ngrams", n = 2)
+Q39_words <- Q39 %>%
+  unnest_tokens(bigram, Question) %>% 
+  filter(!bigram %in% stop_words$word) 
+Q39_bigrams_separated <- Q39_bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+Q39_bigrams_filtered <- Q39_bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  filter(!is.na(word1))
+library(stringr)
+
+# new bigram counts:
+Q39_bigram_counts <- Q39_bigrams_filtered %>%  dplyr::count(word1, word2, sort=T)
+
+#Bigram unite
+Q39_bigrams_united <- Q39_bigrams_filtered %>% filter(!is.na(word1)) %>% 
+  unite(bigram, word1, word2, sep = " ")
+
+set.seed(2017)
+Q39_bigram_graph <- Q39_bigram_counts %>%
+  filter(n > 2 & !is.na(word1)) %>%
+  graph_from_data_frame()
+a<-ggraph(Q39_bigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+set.seed(2020)
+
+a <- grid::arrow(type = "closed", length = unit(.05, "inches"))
+
+if (5 >max(Q39_bigram_counts$n)) {
+  "N-gram value is too high."
+} else
+{
+  ggraph(Q39_bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = F,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "#C39BD3", size = 4) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 0.5, size=4)+    theme_graph( fg_text_colour = 'white')
+
+}
+
+
+```
+
+```{r}
+
+
+ Data %>%
+  select(`study_group`,`CourseNm`, `best_aspects`) %>% drop_na(`best_aspects`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`best_aspects`)  %>% 
+reactable(
+   defaultSorted = c("Group"),
+  groupBy = "Group",
+  defaultColDef = colDef(minWidth = 70),
+    columns = list(
+      Year=colDef(filterable = F),
+    Comment = colDef(minWidth = 250)  # overrides the default
+  ),
+  highlight = T,
+  filterable = T
+  )
+```
+
+### ***Qualitative Analysis - What could your institution do to improve students' engagement in learning?***
+
+```{r fig.height=4, fig.width=10,fig.align='center', error=TRUE,include=TRUE}
+
+Question<-"improve_how"
+
+library(tidytext)
+
+library(ggraph)
+library(igraph)
+library(tidyr)
+library(dplyr)
+
+Q39<-Data  %>%  
+  filter( !is.na(`improve_how`)) %>% select(`study_group`,`improve_how`)
+
+
+Q39_bigrams <- Q39 %>%
+  unnest_tokens(bigram, Question, token = "ngrams", n = 2)
+Q39_words <- Q39 %>%
+  unnest_tokens(bigram, Question) %>% 
+  filter(!bigram %in% stop_words$word) 
+Q39_bigrams_separated <- Q39_bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+Q39_bigrams_filtered <- Q39_bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  filter(!is.na(word1))
+library(stringr)
+
+# new bigram counts:
+Q39_bigram_counts <- Q39_bigrams_filtered %>%  dplyr::count(word1, word2, sort=T)
+
+#Bigram unite
+Q39_bigrams_united <- Q39_bigrams_filtered %>% filter(!is.na(word1)) %>% 
+  unite(bigram, word1, word2, sep = " ")
+
+set.seed(2017)
+Q39_bigram_graph <- Q39_bigram_counts %>%
+  filter(n > 2 & !is.na(word1)) %>%
+  graph_from_data_frame()
+a<-ggraph(Q39_bigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+set.seed(2020)
+
+a <- grid::arrow(type = "closed", length = unit(.05, "inches"))
+
+
+if (2 >max(Q39_bigram_counts$n)) {
+  "N-gram value is too high."
+} else
+{
+  ggraph(Q39_bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = F,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "#C39BD3", size = 4) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 0.5, size=4)+    theme_graph( fg_text_colour = 'white')
+
+}
+
+```
+
+```{r}
+
+
+ Data %>%
+  select(`study_group`,`CourseNm`, `improve_how`) %>% drop_na(`improve_how`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`improve_how`)  %>% 
+reactable(
+   defaultSorted = c("Group"),
+  groupBy = "Group",
+  defaultColDef = colDef(minWidth = 70),
+    columns = list(
+      Year=colDef(filterable = F),
+    Comment = colDef(minWidth = 250)  # overrides the default
+  ),
+  highlight = T,
+  filterable = T
+  )
+```
+
+
+### ***Withdrawal question***
+
+
+```{r}
+
+
+aa<-Data %>% select(sex, num_range("withdrawal_", 1:6))%>% 
+  mutate(Gender=dplyr::recode(sex, '1'='Male', '2'='Female','3'='Female')) %>% select(-sex) %>% 
+ pivot_longer(cols = -Gender, names_to = c('.value', 'withdrawal_'), 
+         names_sep="_") %>% filter(!is.na(withdrawal)) %>% group_by(withdrawal_,Gender) %>%  dplyr::summarise(n=n())
+
+
+    aa$withdrawal_<-recode_factor(aa$withdrawal_,
+                                   "1"="No, I have not seriously considered withdrawing",
+                                   "2"="Yes, for financial reasons",
+                                   "3"="Yes, for personal or family reasons",
+                                   "4"="Yes, for health reasons",
+                                   "5"="Yes, for employment reasons",
+                                   "6"="Yes, to transfer to another institution"
+  )
+
+ ggplot(aa) +
+  aes(x = withdrawal_, fill = Gender, y=n) +
+  geom_bar(stat="identity") +
+  scale_fill_hue(direction = 1) +
+  theme_minimal()+geom_label(aes(label = n),
+             position = position_dodge(width = .0),    # move to center of bars
+              vjust = -0.0,    # nudge above top of bar
+              size = 2) +theme(axis.text.x = element_text( hjust = 1,
+                           size = 7, angle = 60))
+
+```
+### ***Withdrawal question: Other (please state) (Text)***
+
+```{r}
+
+
+ Data %>%
+  select(`study_group`,`CourseNm`, `withdrawal_other`) %>% drop_na(`withdrawal_other`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`withdrawal_other`)  %>% 
+reactable(
+   defaultSorted = c("Group"),
+  groupBy = "Group",
+  defaultColDef = colDef(minWidth = 70),
+    columns = list(
+      Year=colDef(filterable = F),
+    Comment = colDef(minWidth = 250)  # overrides the default
+  ),
+  highlight = T,
+  filterable = T
+  )
+```
+
+
+
+
+### ***Qualitative Analysis - Is there anything this institution could do better to help students develop their career plans or gain work-related skills? Please describe***
+
+```{r fig.height=4, fig.width=10,fig.align='center', error=TRUE,include=TRUE}
+
+Question<-"t1_feedback"
+
+library(tidytext)
+
+library(ggraph)
+library(igraph)
+library(tidyr)
+library(dplyr)
+
+Q39<-Data  %>%  
+  filter( !is.na(`t1_feedback`)) %>% select(`study_group`,`t1_feedback`)
+
+
+Q39_bigrams <- Q39 %>%
+  unnest_tokens(bigram, Question, token = "ngrams", n = 2)
+Q39_words <- Q39 %>%
+  unnest_tokens(bigram, Question) %>% 
+  filter(!bigram %in% stop_words$word) 
+Q39_bigrams_separated <- Q39_bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+Q39_bigrams_filtered <- Q39_bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  filter(!is.na(word1))
+library(stringr)
+
+# new bigram counts:
+Q39_bigram_counts <- Q39_bigrams_filtered %>%  dplyr::count(word1, word2, sort=T)
+
+#Bigram unite
+Q39_bigrams_united <- Q39_bigrams_filtered %>% filter(!is.na(word1)) %>% 
+  unite(bigram, word1, word2, sep = " ")
+
+set.seed(2017)
+Q39_bigram_graph <- Q39_bigram_counts %>%
+  filter(n > 1 & !is.na(word1)) %>%
+  graph_from_data_frame()
+a<-ggraph(Q39_bigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+set.seed(2020)
+
+a <- grid::arrow(type = "closed", length = unit(.05, "inches"))
+
+
+if (2 >max(Q39_bigram_counts$n)) {
+  "N-gram value is too high."
+} else
+{
+  ggraph(Q39_bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = F,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "#C39BD3", size = 4) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 0.5, size=4)+    theme_graph( fg_text_colour = 'white')
+
+}
+
+```
+
+```{r}
+
+
+ Data %>%
+  select(`study_group`,`CourseNm`, `t1_feedback`) %>% drop_na(`t1_feedback`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`t1_feedback`)  %>% 
+reactable(
+   defaultSorted = c("Group"),
+  groupBy = "Group",
+  defaultColDef = colDef(minWidth = 70),
+    columns = list(
+      Year=colDef(filterable = F),
+    Comment = colDef(minWidth = 250)  # overrides the default
+  ),
+  highlight = T,
+  filterable = T
+  )
+```
+
+
+
+## Supportive Environment
+
+### **Supportive Environment**
+
+```{r}
+
+
+
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+```
+
+ 
+
+These questions explore students' perceptions of how much an institution emphasises services and activities that support their learning and development.
+
+------------------------------------------------------------------------
+
+```{r}
+SE_items <- Data %>%
+  select( "Seacademic","Selearnsup","Sediverse","Sesocial","Sewellness","Senonacad","Seactivities","Seevents") 
+
+names(SE_items) <- c(
+  Seacademic="Providing support to help students succeed academically (How much does your institution emphasise:)",
+  Selearnsup="Using learning support services (learning centre, computer centre, maths support, writing support etc.)",
+  Sediverse="Contact among students from different backgrounds (social, racial/ethnic, religious, etc.)",
+  Sesocial="Providing opportunities to be involved socially",
+  Sewellness="Providing support for your overall well-being (recreation, health care, counselling, etc.)",
+  Senonacad="Helping you manage your non-academic responsibilities (work, family, etc.)",
+  Seactivities="Attending campus activities and events (special speakers, cultural performances, sporting events, etc.)",
+  Seevents="Attending events that address important social, economic, or political issues")
+
+
+
+likert_recode_4 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Very little",
+                     ifelse(x == 2, "Some",
+                            ifelse(x == 3, "Quite a bit", "Very much Often"))))
+  
+  y <- factor(y, levels = c("Very little", "Some", "Quite a bit", "Very much"))
+  
+  return(y)
+}
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+SE_items_likert <-as.data.frame(SE_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+SE_items_likert_1 <-as.data.frame(SE_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(SE_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+plot(SE_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(SE_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) 
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=10, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=8, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+a112 <- likert(SE_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=8, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(SE_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Missing Data
+
+```{r}
+Data %>%
+  select( "Seacademic","Selearnsup","Sediverse","Sesocial","Sewellness","Senonacad","Seactivities","Seevents") %>% gg_miss_upset(., nsets = 10)
+
+
+```
+
+## Quantitative Reasoning
+
+### **Quantitative Reasoning**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("QR") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore students' opportunities to develop their skills to reason quantitatively -- to evaluate, support or critique arguments using numerical and statistical information.
+
+------------------------------------------------------------------------
+
+```{r}
+QR_items <- Data %>%
+  select( "Qrconclude",  "Qrproblem",   "Qrevaluate") 
+
+names(QR_items) <- c(
+Qrconclude="Reached conclusions based on your analysis of numerical information (numbers, graphs, statistics, etc.) (During the current academic year, about how often have you:)",
+Qrproblem="Used numerical information to examine a real-world problem or issue (unemployment, climate change, public health, etc.)",
+Qrevaluate="Evaluated what others have concluded from numerical information")
+
+
+
+likert_recode_4 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Never",
+                     ifelse(x == 2, "Sometimes",
+                            ifelse(x == 3, "Often", "Very Often"))))
+  
+  y <- factor(y, levels = c("Never", "Sometimes", "Often", "Very Often"))
+  
+  return(y)
+}
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+QR_items_likert <-as.data.frame(QR_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+QR_items_likert_1 <-as.data.frame(QR_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(QR_items_likert, grouping=Data$study_group)
+
+
+# xtable
+# xtable(l24g) # TODO: Doesn't work!
+
+# Plots
+
+
+
+
+
+
+
+## With only one varaible
+
+
+
+```
+
+```{r fig.height=3, fig.width=10,fig.align='center'}
+plot(QR_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(QR_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) 
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=5, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=80)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=5, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(QR_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=80)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=5, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(QR_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=80)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Missing Data
+
+```{r}
+Data %>%
+  select( "Qrconclude",  "Qrproblem",   "Qrevaluate") %>% gg_miss_upset(., nsets = 10)
+
+```
+
+## Student-Faculty Interaction
+
+### **Student-Faculty Interaction**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("SF") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore the extent to which students interact with academic staff. Interactions with academic staff can positively influence cognitive growth, development and persistence of students.
+
+------------------------------------------------------------------------
+
+```{r}
+SF_items <- Data %>%
+  select( "Sfcareer","Sfotherwork","Sfdiscuss","Sfperform") 
+
+names(SF_items) <- c(
+Sfcareer="Talked about career plans with academic staff (During the current academic year, about how often have you:)",
+Sfotherwork="Worked with academic staff on activities other than coursework (committees, student groups, etc.)",
+Sfdiscuss="Discussed course topics, ideas, or concepts with academic staff outside of class",
+Sfperform="Discussed your performance with academic staff")
+
+
+
+likert_recode_4 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Never",
+                     ifelse(x == 2, "Sometimes",
+                            ifelse(x == 3, "Often", "Very Often"))))
+  
+  y <- factor(y, levels = c("Never", "Sometimes", "Often", "Very Often"))
+  
+  return(y)
+}
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+SF_items_likert <-as.data.frame(SF_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+SF_items_likert_1 <-as.data.frame(SF_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(SF_items_likert, grouping=Data$study_group)
+
+
+# xtable
+# xtable(l24g) # TODO: Doesn't work!
+
+# Plots
+
+
+
+
+
+
+
+## With only one varaible
+
+
+
+```
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(SF_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(SF_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) 
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=80)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(SF_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=80)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(SF_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=80)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Missing Data
+
+```{r}
+Data %>%
+  select( "Sfcareer","Sfotherwork","Sfdiscuss","Sfperform") %>% gg_miss_upset(., nsets = 10)
+
+```
+
+## Collaborative Learning
+
+### **Collaborative Learning**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("CL") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore the extent to which students collaborate with peers to solve problems or to master difficult material, thereby deepening their understanding
+
+------------------------------------------------------------------------
+
+```{r}
+CL_items <- Data %>%
+  select( "Claskhelp","Clexplain","Clstudy","Clproject") 
+
+names(CL_items) <- c(
+Claskhelp="Asked another student to help you understand course material (During the current academic year, about how often have you:)",
+Clexplain="Explained course material to one or more students (During the current academic year, about how often have you:)",
+Clstudy="Prepared for exams by discussing or working through course material with other students (During the current academic year, about how often have you:)",
+Clproject="Worked with other students on projects or assignments (During the current academic year, about how often have you:)")
+
+
+
+likert_recode_4 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Never",
+                     ifelse(x == 2, "Sometimes",
+                            ifelse(x == 3, "Often", "Very Often"))))
+  
+  y <- factor(y, levels = c("Never", "Sometimes", "Often", "Very Often"))
+  
+  return(y)
+}
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+CL_items_likert <-as.data.frame(CL_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+CL_items_likert_1 <-as.data.frame(CL_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(CL_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(CL_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(CL_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) 
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=80)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(CL_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=80)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(CL_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=80)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Missing Data
+
+```{r}
+Data %>%
+  select(  "Claskhelp","Clexplain","Clstudy","Clproject") %>% gg_miss_upset(., nsets = 10)
+
+```
+
+## Quality of Interactions
+
+### **Quality of Interactions**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("QI") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore student experiences of supportive relationships with a range of other people and roles on campus, thereby contributing to students' ability to find assistance when needed and to learn from and with those around them. Not applicable is available as a response option. 'Not applicable' responses have been removed from these results.
+
+------------------------------------------------------------------------
+
+```{r}
+QI_items <- Data %>%
+  select( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin") 
+
+names(QI_items) <- c(
+Qistudent="Students (At your institution, please indicate the quality of interactions with:)",
+Qiadvisor="Academic advisors",
+Qifaculty="Academic staff",
+Qistaff="Support services staff (career services, student activities, accommodation, etc.)",
+Qiadmin="Other administrative staff and offices (registry, finance, etc.)")
+
+
+
+likert_recode <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Poor",
+                     ifelse(x == 2, "2",
+                            ifelse(x == 3, "3",
+                                   ifelse(x == 4, "4",
+                                          ifelse(x == 5, "5",
+                            ifelse(x == 6, "6", "Excellent")))))))
+  
+  y <- factor(y, levels = c("Poor", "2", "3", "4","5","6", "Excellent"))
+  
+  return(y)
+}
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+QI_items_likert <-as.data.frame(QI_items) %>% 
+  mutate_all(likert_recode) 
+
+
+QI_items_likert_1 <-as.data.frame(QI_items) %>% 
+  mutate_all(likert_recode) %>% likert()
+
+##### Group by Country
+a111 <- likert(QI_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(QI_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(QI_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) 
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(QI_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(QI_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Missing Data
+
+```{r}
+Data %>%
+  select( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin") %>% gg_miss_upset(., nsets = 10)
+
+```
+
+## COVID-19
+
+### **COVID-19**
+
+Questions related to COVID-19
+
+------------------------------------------------------------------------
+
+```{r}
+COVID_items <- Data %>%
+  select( "COVID_UG_1","COVID_UG_2","COVID_UG_3","COVID_UG_4","COVID_UG_5") 
+
+names(COVID_items) <- c(
+COVID_UG_1="My higher education institution provides me with ongoing effective and timely communication.",
+COVID_UG_2="My higher education institution provides me with adequate online learning opportunities.",
+COVID_UG_3="I am able to access the online learning sufficiently to engage with my studies.",
+COVID_UG_4="I have a suitable study environment at home (space to work, internet access, computer, etc).",
+COVID_UG_5="I feel connected to my higher education institution despite the restricted access to campus.")
+
+
+likert_recode_4 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Definitely disagree",
+                     ifelse(x == 2, "Somewhat disagree",
+                            ifelse(x == 3, "Somewhat agree", "Definitely agree"))))
+  
+  y <- factor(y, levels = c("Definitely disagree", "Somewhat disagree", "Somewhat agree", "Definitely agree"))
+  
+  return(y)
+}
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+COVID_items_likert <-as.data.frame(COVID_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+COVID_items_likert_1 <-as.data.frame(COVID_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(COVID_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(COVID_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(COVID_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) 
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=80)
+```
+
+------------------------------------------------------------------------
+
+## Quality of Data
+
+### **Quality of Data**
+
+```{r}
+    percent <- function(x, digits = 1, format = "f", ...) {
+        paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
+    }
+
+QI_s <- c( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin") #7
+RI_s <- c(  "Ridiverse","Riintegrate","Risocietal","Riownview","Riperspect","Rinewview","Riconnect") #4
+SE_s <- c( "Seacademic","Selearnsup","Sediverse","Sesocial","Sewellness","Senonacad","Seactivities","Seevents") #4
+SF_s <- c( "Sfcareer","Sfotherwork","Sfdiscuss","Sfperform")
+CL_s <- c("Claskhelp","Clexplain","Clstudy","Clproject")
+
+QI<- Data %>% select( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin",
+                      "Ridiverse","Riintegrate","Risocietal","Riownview","Riperspect","Rinewview","Riconnect","Seacademic","Selearnsup","Sediverse","Sesocial","Sewellness","Senonacad","Seactivities","Seevents","Sfcareer","Sfotherwork","Sfdiscuss","Sfperform","Claskhelp","Clexplain","Clstudy","Clproject")
+  
+
+
+
+
+# Activate the dplyr package
+library("tidyverse")
+
+# Correlation matrix of items
+Data1 <- QI %>%
+  cor(., use = "pairwise.complete.obs")
+# Activate the corrplot package
+library("corrplot")
+
+# Correlation matrix plot
+corrplot(Data1, # correlation matrix
+         order = "hclust", # hierarchical clustering of correlations
+         addrect = 5) # number of rectangles to draw around clusters
+
+
+# Activate the naniar package
+library("naniar")
+
+
+```
+
+```{r eval=FALSE, include=FALSE}
+# Activate reshape2 and ggalluvial
+library("reshape2")
+library("ggalluvial")
+
+# Transform the data from wide format to long format
+data_long <- mutate(Data,
+                    # Create categorical gender and immigration variables
+                    gender = ifelse(sex == 1, "Male", "Female"),
+                    Study_group = factor(
+                      ifelse(is.na(study_group), NA, 
+                                         ifelse(study_group == "Y1", "Year One", 
+                                                ifelse(study_group == "YF", "Final Year", 
+                                                       "Post Graduate"))),
+                      levels = c("Year One", "Final Year", "Post Graduate")
+                    )) %>%
+  # Drop old variables
+  select("AnonymisedStudentId","Mode_of_Study","Seacademic","Selearnsup","gender","Study_group") %>%
+  # Make the variable names easier
+  # rename(grade = ST001D01T,
+  #        student = CNTSTUID,
+  #        age = AGE) %>%
+  # Melt data to long format
+  melt(data = .,
+       id.vars = c("AnonymisedStudentId", "Mode_of_Study", "Study_group", "gender"),
+       variable.name = "question",
+       value.name = "response") %>%
+  mutate(
+    # Recode numerical responses to character strings
+    response2 = (ifelse(is.na(response), "Missing",
+                        ifelse(response == 1, "Strongly disagree",
+                               ifelse(response == 2, "Disagree",
+                                      ifelse(response == 3, "Agree", "Strongly agree"))))),
+    # Reorder factors
+    response3 = factor(response2, levels = c("Missing", "Strongly disagree", "Disagree", 
+                                             "Agree", "Strongly agree"))
+    
+  ) 
+
+
+# Create a frequency table for one of the items
+ST082Q01 <- data_long %>%
+  filter(question == "Selearnsup") %>%
+  group_by(gender, Study_group, response3) %>%
+  dplyr::summarise(Freq = n()) %>% filter(response3 != "Missing")
+  
+# Create an alluvial plot
+ggplot(ST082Q01,
+       aes(y = Freq, axis1 = Study_group, axis2 = gender, axis3 = response3)) +
+  geom_alluvium(aes(fill = Study_group), width = 1/12) +
+  geom_stratum(width = 1/12, fill = "black", color = "grey") +
+  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
+  scale_x_discrete(limits = c("gender", "Study_group", "response3"), expand = c(.1, .1)) +
+  scale_fill_brewer(type = "qual", palette = "Set1") +
+  ggtitle("I prefer working as part of a team to working alone.")+
+  theme_minimal()
+```
+
+```{r eval=FALSE, fig.height=10, fig.width=10, include=FALSE}
+  gg_miss_upset(QI, nsets = 200)
+
+```

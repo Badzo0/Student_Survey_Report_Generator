@@ -9,6 +9,11 @@ library(naniar)
 library(shinycssloaders)
 library(waiter)
 library(fmsb)
+library(markdown)
+library(shinyalert)
+library(shinywidgets)
+
+
 df<-NULL
 source('functions.R', local = TRUE)
 shinyServer(function(input, output, session) {

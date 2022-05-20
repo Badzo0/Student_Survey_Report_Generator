@@ -1,25 +1,28 @@
 # Student_Survey_Report_Generator
 &nbsp;
-In RStudio go to: File -> New Project
-select "Version Control"
 
+
+On this page go to Code -> Download Zip
 
 <img src="/img1.png"
      style="float: left; margin-right: 10;" />
-
-
-
-Select Git
-
+     
+     
+     
+Unzip the downloaded file and open "Student_Survey_Report_Generator.Rproj" (This will open Rstudio)   
+    
 <img src="/img2.png"
      style="float: left; margin-right: 10;" />
 &nbsp;
 
-In Repository URL copy: https://github.com/Badzo0/Student_Survey_Report_Generator
+In RStudio in the Files tab (Located on the bottom right side) open the server.R file (Double click on it)
 
 <img src="/img3.png"
      style="float: left; margin-right: 10;" />
 &nbsp;
 
+When opened a notice will show up prompting you to install the required libraries. Click "install" and wait for the process to finish
 
-Click "Create project"
+<img src="/img4.png"
+     style="float: left; margin-right: 10;" />
+&nbsp;

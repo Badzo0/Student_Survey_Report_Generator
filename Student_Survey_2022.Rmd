@@ -153,7 +153,7 @@ reactable(
 
 ```
 
-```{r fig.height=4, fig.width=10}
+```{r fig.height=5, fig.width=12}
 
 High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
 
@@ -256,12 +256,6 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
     scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
       theme(panel.grid.major = element_blank(),
             strip.text.x = element_blank())
-    
-    
-    theme(panel.grid.major.x = element_line(color = "red",
-                                          size = 0.5,
-                                          linetype = 2))
-
 
 
 ```

@@ -141,10 +141,13 @@ output$plot12 <- renderPlot({
   
   ggplot(transpose,aes(x=factor(rowname), y=diff, fill=name))+ geom_bar( stat='identity', position=position_dodge())+
     theme_bw()+  xlab("Indicators")+
-    theme(axis.text.x=element_text(angle=45, hjust=1, size=10))+
+    theme(axis.text.x=element_text(angle=45, hjust=1, size=8))+
+    facet_grid(cols=vars(rowname),scales = "free_x")+
     geom_text(aes(label=sprintf("%2.1f", diff)), angle=90,position = position_dodge(width = .9),size=3)+ggtitle("Difference from national Average")+
     geom_hline(yintercept=0)+
-    scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))
+    scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+    theme(panel.grid.major = element_blank(),
+          strip.text.x = element_blank())
 })
 
 

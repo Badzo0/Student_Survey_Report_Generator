@@ -11,7 +11,13 @@ library(waiter)
 library(fmsb)
 library(markdown)
 library(shinyalert)
-library(shinywidgets)
+library(shinyWidgets)
+
+
+if(!require("shinyWidgets")){
+    install.packages("shinyWidgets",dependencies = TRUE)
+    library(shinyWidgets)
+}
 
 
 df<-NULL

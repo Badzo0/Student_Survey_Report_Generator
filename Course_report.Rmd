@@ -225,3 +225,61 @@ High_level<-Data %>%filter(courseCd==params$course) %>% dplyr::group_by(study_gr
     scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))
 
 ```
+
+
+
+```{r}
+
+df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+#df3<-column_to_rownames(df3, "study_group")
+#avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)
+
+
+
+
+avg<-  data.frame(
+  HO = c(34.88),
+  RI = c(32.01),
+  QR = c(20.92),
+  LS = c(31.94),
+  CL = c(29.17),
+  SF = c(13.18),
+  ET = c(33.06),
+  QI = c(38.35),
+  SE = c(28.35),
+  LC = c(32.67)
+)
+
+df3<-data.frame(rbind(rep(40, 10), rep(0, 10),avg,
+                      df3 ))%>% round(0)
+names(df3)<- c(
+  HO="Higher-Order Learning",
+  RI="Reflective and Integrative Learning",
+  QR="Quantitative Reasoning",
+  LS="Learning Strategies",
+  CL="Collaborative Learning",
+  SF="Student-Faculty Interaction",
+  ET="Effective Teaching Practices",
+  QI="Quality of Interactions",
+  SE="Supportive Environment",
+  LC="Learning, Creative and Social Skills"
+  
+  
+)
+# Produce a radar-chart
+radarchart(
+  df3,
+  pfcol = c(rgb(0.51, 0.167, 0.236, 0.25),NA),
+  pcol= c(NA,"#3e9cbf"), plty = 1, plwd = 3,
+  axistype = 4,
+  title = "Institutional profile", caxislabels = c(0,10, 20, 30, 40),
+  axislabcol = "black"
+) 
+legend(
+  x = -2.5,y=0.3, legend = c("Nat. Average","Institution"), horiz = F,
+  bty = "n", pch = 20 , col = c(rgb(0.51, 0.167, 0.236, 0.25), "Blue"),
+  text.col = "black", cex = 1, pt.cex = 1.5)
+
+
+```
+

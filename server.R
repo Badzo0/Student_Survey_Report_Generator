@@ -4,7 +4,6 @@ library(reactable)
 library(tidyverse)
 library(readxl)
 library(likert)
-library(plyr)
 library(naniar)
 library(shinycssloaders)
 library(waiter)
@@ -12,6 +11,9 @@ library(fmsb)
 library(markdown)
 library(shinyalert)
 library(shinyWidgets)
+library(data.table)
+library(reactable)
+library(gt)
 
 
 if(!require("shinyWidgets")){

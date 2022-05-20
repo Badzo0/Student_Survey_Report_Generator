@@ -10,7 +10,7 @@ reportname <- reactive({
 ending <- reactive({ 
   if (input$selectreport =="Student_Survey_2021_Indicators") ending<-".html"
   else if(input$selectreport =="Student_Survey_2022")ending<-".html"
-  else{ending <-".pdf"}
+  else{ending <-".html"}
 })
 
 parameters <- reactive({ 

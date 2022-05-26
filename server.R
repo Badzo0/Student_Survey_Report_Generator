@@ -14,12 +14,11 @@ library(shinyWidgets)
 library(data.table)
 library(reactable)
 library(gt)
-
-
-if(!require("shinyWidgets")){
-    install.packages("shinyWidgets",dependencies = TRUE)
-    library(shinyWidgets)
-}
+library(ggraph)
+library(igraph)
+library(tidytext)
+library(stringr)
+library(corrplot)
 
 
 df<-NULL

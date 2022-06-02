@@ -37,7 +37,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
  
 
-```{r fig.height=8, fig.width=10}
+```{r echo=FALSE, fig.height=8, fig.width=10}
 df3<-Data %>% filter(courseCd==params$course) %>%  dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE") %>% dplyr::summarise(across(2:10,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
     #df3<-column_to_rownames(df3, "study_group")
   #avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)

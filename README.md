@@ -45,4 +45,4 @@ Click "Run App" in the top right corner of the document to start the application
 
 2. I see an error about package versions not matching the expected version:     
     
-   This happens when the R version is not updated to the lates version. To fix this issue you need to install R again. You can do so on this page:          https://www.r-project.org/
+   This happens when the R version is not updated to the latest version. To fix this issue you need to install R again. You can do so on this page:          https://www.r-project.org/

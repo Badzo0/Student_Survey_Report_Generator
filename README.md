@@ -1,6 +1,9 @@
 # Student_Survey_Report_Generator
 &nbsp;
 
+This app is availible here: https://podobnik.shinyapps.io/StudentSurveyReporteR/
+
+# How to run locally:
 
 On this page go to Code -> Download Zip
 

@@ -43,10 +43,6 @@ Data <- read_excel(params$n, sheet = "Data")
 ngramnum<- params$obs
 
 
-Data <-  read_excel("~/Downloads/Mary Immaculate College Data File 2022.xlsx", 
-    sheet = "Data")
-  
-  
 
     percent <- function(x, digits = 1, format = "f", ...) {
         paste0(formatC(100 * x, format = format, digits = digits, ...), "%")

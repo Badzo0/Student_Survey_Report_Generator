@@ -256,7 +256,7 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
 
 ```
 
-```{r fig.height=10, fig.width=10}
+```{r fig.height=12, fig.width=12}
 
   df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
     #df3<-column_to_rownames(df3, "study_group")
@@ -1325,108 +1325,634 @@ Data %>%
 ```
 
 
-## Quality of Data
 
-### **Quality of Data**
+
+## Higher Order Learning
+
+### **Higher Order Learning**
 
 ```{r}
-    percent <- function(x, digits = 1, format = "f", ...) {
-        paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
-    }
-
-QI_s <- c( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin") #7
-RI_s <- c(  "Ridiverse","Riintegrate","Risocietal","Riownview","Riperspect","Rinewview","Riconnect") #4
-SE_s <- c( "Seacademic","Selearnsup","Sediverse","Sesocial","Sewellness","Senonacad","Seactivities","Seevents") #4
-SF_s <- c( "Sfcareer","Sfotherwork","Sfdiscuss","Sfperform")
-CL_s <- c("Claskhelp","Clexplain","Clstudy","Clproject")
-
-QI<- Data %>% select( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin",
-                      "Ridiverse","Riintegrate","Risocietal","Riownview","Riperspect","Rinewview","Riconnect","Seacademic","Selearnsup","Sediverse","Sesocial","Sewellness","Senonacad","Seactivities","Seevents","Sfcareer","Sfotherwork","Sfdiscuss","Sfperform","Claskhelp","Clexplain","Clstudy","Clproject")
-  
+dd<-Data %>% dplyr::summarise(across(starts_with("HO") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
 
 
 
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
 
-# Activate the dplyr package
-library("tidyverse")
-
-# Correlation matrix of items
-Data1 <- QI %>%
-  cor(., use = "pairwise.complete.obs")
-# Activate the corrplot package
-library("corrplot")
-
-# Correlation matrix plot
-corrplot(Data1, # correlation matrix
-         order = "hclust", # hierarchical clustering of correlations
-         addrect = 5) # number of rectangles to draw around clusters
-
-
-# Activate the naniar package
-library("naniar")
-
-
-```
-
-```{r eval=FALSE, include=FALSE}
-# Activate reshape2 and ggalluvial
-library("reshape2")
-library("ggalluvial")
-
-# Transform the data from wide format to long format
-data_long <- mutate(Data,
-                    # Create categorical gender and immigration variables
-                    gender = ifelse(sex == 1, "Male", "Female"),
-                    Study_group = factor(
-                      ifelse(is.na(study_group), NA, 
-                                         ifelse(study_group == "Y1", "Year One", 
-                                                ifelse(study_group == "YF", "Final Year", 
-                                                       "Post Graduate"))),
-                      levels = c("Year One", "Final Year", "Post Graduate")
-                    )) %>%
-  # Drop old variables
-  select("AnonymisedStudentId","Mode_of_Study","Seacademic","Selearnsup","gender","Study_group") %>%
-  # Make the variable names easier
-  # rename(grade = ST001D01T,
-  #        student = CNTSTUID,
-  #        age = AGE) %>%
-  # Melt data to long format
-  melt(data = .,
-       id.vars = c("AnonymisedStudentId", "Mode_of_Study", "Study_group", "gender"),
-       variable.name = "question",
-       value.name = "response") %>%
-  mutate(
-    # Recode numerical responses to character strings
-    response2 = (ifelse(is.na(response), "Missing",
-                        ifelse(response == 1, "Strongly disagree",
-                               ifelse(response == 2, "Disagree",
-                                      ifelse(response == 3, "Agree", "Strongly agree"))))),
-    # Reorder factors
-    response3 = factor(response2, levels = c("Missing", "Strongly disagree", "Disagree", 
-                                             "Agree", "Strongly agree"))
-    
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
   ) 
+    
+
+```
+
+ 
+
+These questions explore the extent to which students' work emphasises challenging cognitive tasks, such as application, analysis, judgement, and synthesis.
+
+------------------------------------------------------------------------
+
+```{r}
+HO_items <- Data %>%
+  select( "Hoapply","Hoanalyze","Hoevaluate","Hoform") 
 
 
-# Create a frequency table for one of the items
-ST082Q01 <- data_long %>%
-  filter(question == "Selearnsup") %>%
-  group_by(gender, Study_group, response3) %>%
-  dplyr::summarise(Freq = n()) %>% filter(response3 != "Missing")
+names(HO_items) <- c(
+Hoapply="Applying facts, theories, or methods to practical problems or new situations",
+Hoanalyze="Analysing an idea, experience, or line of reasoning in depth by examining its parts",
+Hoevaluate="Evaluating a point of view, decision, or information source",
+Hoform="Forming an understanding or new idea from various pieces of information")
+
+likert_recode_4.1 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Very little",
+                     ifelse(x == 2, "Some",
+                            ifelse(x == 3, "Quite a bit", "Very Much"))))
   
-# Create an alluvial plot
-ggplot(ST082Q01,
-       aes(y = Freq, axis1 = Study_group, axis2 = gender, axis3 = response3)) +
-  geom_alluvium(aes(fill = Study_group), width = 1/12) +
-  geom_stratum(width = 1/12, fill = "black", color = "grey") +
-  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
-  scale_x_discrete(limits = c("gender", "Study_group", "response3"), expand = c(.1, .1)) +
-  scale_fill_brewer(type = "qual", palette = "Set1") +
-  ggtitle("I prefer working as part of a team to working alone.")+
-  theme_minimal()
+  y <- factor(y, levels = c("Very little", "Some", "Quite a bit", "Very Much"))
+  
+  return(y)
+}
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+HO_items_likert <-as.data.frame(HO_items) %>% 
+  mutate_all(likert_recode_4.1) 
+
+
+HO_items_likert_1 <-as.data.frame(HO_items) %>% 
+  mutate_all(likert_recode_4.1) %>% likert()
+
+##### Group by Country
+a111 <- likert(HO_items_likert, grouping=Data$study_group)
+
+
 ```
 
-```{r eval=FALSE, fig.height=10, fig.width=10, include=FALSE}
-  gg_miss_upset(QI, nsets = 200)
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(HO_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(HO_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("During the current academic year, how much has your coursework emphasised:")
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(HO_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
 
 ```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(HO_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+
+
+
+## Reflective and Integrative Learning
+
+### **Reflective and Integrative Learning**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("RI") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore the extent to which students relate their own understanding and experiences to the learning content being used.
+
+------------------------------------------------------------------------
+
+```{r}
+RI_items <- Data %>%
+  select( "Riintegrate","Risocietal","Ridiverse","Riownview","Riperspect","Rinewview","Riconnect") 
+
+
+
+
+
+names(RI_items) <- c(
+Riintegrate="Combined ideas from different subjects / modules when completing assignments ",
+Risocietal="Connected your learning to problems or issues in society ",
+Ridiverse="Included diverse perspectives (political, religious, racial, ethnic, gender, etc.) in discussions or assignment",
+Riownview="Examined the strengths and weaknesses of your own views on a topic or issue ",
+Riperspect="Tried to better understand someone else's views by imagining how an issue looks from their perspective ",
+Rinewview="Learned something that changed the way you understand an issue or concept ",
+Riconnect="Connected ideas from your subjects / modules to your prior experiences and knowledge ")
+
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+RI_items_likert <-as.data.frame(RI_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+RI_items_likert_1 <-as.data.frame(RI_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(RI_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+plot(RI_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(RI_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("During the current academic year, about how often have you:")
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=8, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=8, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(RI_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=8, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(RI_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+## Learning Strategies
+
+### **Learning Strategies**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("LS") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore the extent to which students actively engage with and analyse course material, rather than approaching learning passively.
+
+------------------------------------------------------------------------
+
+```{r}
+LS_items <- Data %>%
+  select( "Lsreading","Lsnotes","Lssummary") 
+
+
+
+
+names(LS_items) <- c(
+Lsreading="Identified key information from recommended reading materials",
+Lsnotes="Reviewed your notes after class, tutorials, labs or studios",
+Lssummary="Summarised what you learned in class, tutorials, labs or studios, or from course materials")
+
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+LS_items_likert <-as.data.frame(LS_items) %>% 
+  mutate_all(likert_recode_4) 
+
+
+LS_items_likert_1 <-as.data.frame(LS_items) %>% 
+  mutate_all(likert_recode_4) %>% likert()
+
+##### Group by Country
+a111 <- likert(LS_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(LS_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(LS_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("During the current academic year, about how often have you:")
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(LS_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(LS_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+## Effective Teaching Practices
+
+### **Effective Teaching Practices**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("ET") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+These questions explore the extent to which students experience teaching practices that contribute to promoting comprehension and learning.
+
+------------------------------------------------------------------------
+
+```{r}
+ET_items <- Data %>%
+  select( "Etgoals","Etorganize","Etexample","Etdraftfb","Etfeedback") 
+
+
+
+
+names(ET_items) <- c(
+Etgoals="Clearly explained course goals and requirements",
+Etorganize="Taught in an organised way",
+Etexample="Used examples or illustrations to explain difficult points",
+Etdraftfb="Provided feedback on a draft or work in progress",
+Etfeedback="Provided prompt and detailed feedback on tests or completed assessments")
+
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+ET_items_likert <-as.data.frame(ET_items) %>% 
+  mutate_all(likert_recode_4.1) 
+
+
+ET_items_likert_1 <-as.data.frame(ET_items) %>% 
+  mutate_all(likert_recode_4.1) %>% likert()
+
+##### Group by Country
+a111 <- likert(ET_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+plot(ET_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(ET_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("During the current academic year, to what extent have lecturers / teaching staff:")
+
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(ET_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(ET_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+
+### Missing Data
+
+```{r}
+Data %>%
+  select( "Etgoals","Etorganize","Etexample","Etdraftfb","Etfeedback") %>% gg_miss_upset(., nsets = 10)
+
+```
+
+
+
+## Learning creative and Social skills
+
+### **Learning creative and Social skills**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("LC") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+
+------------------------------------------------------------------------
+
+```{r}
+LC_items <- Data %>%
+  select( "pgwrite","pgspeak","pgthink","pganalyse","pgwork","pgothers","pgprobsolve","Pgcitizen","Pgcreative") 
+
+
+names(LC_items) <- c(
+pgwrite="Writing clearly and effectively",
+pgspeak="Speaking effectively",
+pgthink="Thinking critically and analytically",
+pganalyse="Analysing numerical and statistical information",
+pgwork="Acquiring job- or work-related knowledge and skills",
+pgothers="Working effectively with others",
+pgprobsolve="Solving complex real-world problems",
+Pgcitizen="Being an informed and active citizen (societal / political / community)",
+Pgcreative="Being innovative and creative ")
+
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+LC_items_likert <-as.data.frame(LC_items) %>% 
+  mutate_all(likert_recode_4.1) 
+
+
+LC_items_likert_1 <-as.data.frame(LC_items) %>% 
+  mutate_all(likert_recode_4.1) %>% likert()
+
+##### Group by Country
+a111 <- likert(LC_items_likert, grouping=Data$study_group)
+
+
+```
+
+```{r fig.height=6, fig.width=10,fig.align='center'}
+plot(LC_items_likert_1, 
+     # Group the items alphabetically
+group.order=names(LC_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("How much has your experience at this institution contributed to your knowledge, skills, and personal \ndevelopment in the following areas?")
+```
+
+------------------------------------------------------------------------
+
+### Study Group
+
+```{r fig.height=9, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=TRUE,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Faculty Group
+
+```{r fig.height=8, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(LC_items_likert, grouping=Data$AcUnit1)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+------------------------------------------------------------------------
+
+### Campus Group
+
+```{r fig.height=8, fig.width=10,fig.align='center'}
+#a112 <- likert(SE_items_likert, grouping=Data$Group)
+
+
+
+a112 <- likert(LC_items_likert, grouping=Data$AcUnit2)
+
+plot(a112,include.histogram=TRUE,wrap=200)
+
+
+```
+
+

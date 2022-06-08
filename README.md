@@ -49,3 +49,11 @@ Click "Run App" in the top right corner of the document to start the application
 2. I see an error about package versions not matching the expected version:     
     
    This happens when the R version is not updated to the latest version. To fix this issue you need to install R again. You can do so on this page:          https://www.r-project.org/
+   
+  
+  3. An error apears that looks like this:  "An error has occurred! package or namespace load failed for ‘likert’ in loadNamespace(j <- i[[1L]], c(lib.loc, .libPaths()), versionCheck = vI[[j]]): there is no package called ‘tmvnsim’"
+     
+     This means you installed the packages but some dependancies were not installed. You need to run this command: 
+     "install.packages("likert", dependencies=TRUE)" - instead of "likert" insert whichever library failed to load based on the error message
+     
+     R might ask you to install Rtools. do that and re-run the same command. This should install the package with all it's dependancies. 

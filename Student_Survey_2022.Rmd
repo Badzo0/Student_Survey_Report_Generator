@@ -12,12 +12,6 @@ params:
 
 ### ***Indicator Overview***
 
-```{r}
-```
-
-```{r}
-```
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = FALSE,
@@ -38,10 +32,18 @@ library(reactable)
 library(naniar)
 library(gt)
 library(fmsb)
+library(grid)
+library(scales)
+library(patchwork)
+library(tidytext)
+library(ggraph)
+library(igraph)
+library(tidyr)
+library(dplyr)
+library(stringr)
 
 Data <- read_excel(params$n, sheet = "Data")
 ngramnum<- params$obs
-
 
 
     percent <- function(x, digits = 1, format = "f", ...) {
@@ -278,6 +280,61 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
           LC = c(33.14)
   )
   
+  df3<-data.frame(rbind(rep(60, 10), rep(0, 10),avg,
+                        df3 ))%>% round(0)
+   names(df3)<- c(
+    HO="Higher-Order Learning",
+    RI="Reflective and Integrative Learning",
+    QR="Quantitative Reasoning",
+    LS="Learning Strategies",
+    CL="Collaborative Learning",
+    SF="Student-Faculty Interaction",
+    ET="Effective Teaching Practices",
+    QI="Quality of Interactions",
+    SE="Supportive Environment",
+    LC="Learning, Creative and Social Skills"
+
+    
+  )
+
+  # Produce a radar-chart
+  radarchart(
+    df3,
+    pfcol = c("#c1dfea",NA),
+    pcol= c(NA,"#ff9248"), plty = 1, plwd = 5,
+    axistype = 4,
+    title = "Institutional profile", caxislabels = c(0,15, 30, 45, 60),
+    axislabcol = "black"
+  )
+  legend(
+    x = "bottom", legend = c("Nat. Average","Institution"), horiz = T,
+    bty = "n", pch = 20 , col = c("Lightblue", "Orange"),
+    text.col = "black", cex = 1, pt.cex = 1.5
+  )
+```
+
+```{r eval=FALSE, fig.height=12, fig.width=12, include=FALSE}
+
+  df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+    #df3<-column_to_rownames(df3, "study_group")
+  #avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)
+  
+  
+  
+  
+  avg<-  data.frame(
+          HO = c(34.88),
+          RI = c(32.01),
+          QR = c(20.92),
+          LS = c(31.94),
+          CL = c(29.17),
+          SF = c(13.18),
+          ET = c(33.06),
+          QI = c(38.35),
+          SE = c(28.35),
+          LC = c(33.14)
+  )
+  
   df3<-data.frame(rbind(rep(40, 10), rep(0, 10),avg,
                         df3 ))%>% round(0)
    names(df3)<- c(
@@ -310,7 +367,6 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
     text.col = "black", cex = 1, pt.cex = 1.5
   )
 ```
-
 
 
 ## Qualitative Analysis
@@ -483,11 +539,9 @@ reactable(
   )
 ```
 
-
 ### ***Withdrawal question***
 
-
-```{r}
+```{r fig.height=8, fig.width=9}
 
 
 aa<-Data %>% select(sex, num_range("withdrawal_", 1:6))%>% 
@@ -505,17 +559,41 @@ aa<-Data %>% select(sex, num_range("withdrawal_", 1:6))%>%
                                    "6"="Yes, to transfer to another institution"
   )
 
- ggplot(aa) +
-  aes(x = withdrawal_, fill = Gender, y=n) +
-  geom_bar(stat="identity") +
+plot1<- ggplot(aa) +
+  aes(x = withdrawal_, fill = Gender, y=n, label=n) +
+  geom_bar(stat="identity",position = "dodge") +
   scale_fill_hue(direction = 1) +
-  theme_minimal()+geom_label(aes(label = n),
-             position = position_dodge(width = .0),    # move to center of bars
-              vjust = -0.0,    # nudge above top of bar
-              size = 2) +theme(axis.text.x = element_text( hjust = 1,
-                           size = 7, angle = 60))
+  theme_minimal()+geom_text( position = position_dodge(width = .9),    # move to center of bars
+              vjust = -0.5,    # nudge above top of bar
+              size = 3) +theme(axis.text.x = element_text( hjust = 1,
+                           size = 7, angle = 60))+scale_y_continuous(limits=c(0,370))+xlab("Withdraval")
+ 
+
+ library(scales)
+ library(patchwork)
+ aa2<-aa %>% mutate(total= case_when(Gender == "Female" ~ 670,
+                           Gender ==  "Male" ~ 119),
+               PCT=  n/total) 
+ plot2<-ggplot(aa2) +
+  aes(x = withdrawal_, fill = Gender,group=Gender,  y=PCT,label=percent(PCT)) +
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_hue(direction = 1) +
+  theme_minimal()+ geom_text( position = position_dodge(width = .9),    # move to center of bars
+              vjust = -0.5,    # nudge above top of bar
+              size = 3)+
+    scale_y_continuous(limits=c(0,0.55),labels = scales::percent)+theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank(),axis.title.x=element_blank(),
+        legend.position = "none")+ggtitle("Have you seriously considered withdrawing from your course?")
+
+ 
+ 
+ 
+ plot2/plot1+
+  plot_layout(guides = 'collect')
+ 
 
 ```
+
 ### ***Withdrawal question: Other (please state) (Text)***
 
 ```{r}
@@ -535,9 +613,6 @@ reactable(
   filterable = T
   )
 ```
-
-
-
 
 ### ***Qualitative Analysis - Is there anything this institution could do better to help students develop their career plans or gain work-related skills? Please describe***
 
@@ -623,8 +698,6 @@ reactable(
   )
 ```
 
-
-
 ## Supportive Environment
 
 ### **Supportive Environment**
@@ -662,6 +735,7 @@ gt() %>%
  
 
 These questions explore students' perceptions of how much an institution emphasises services and activities that support their learning and development.
+(The scale only includes "very little" as a negative answer. This can be changed in the code if needed)
 
 ------------------------------------------------------------------------
 
@@ -685,7 +759,7 @@ likert_recode_4 <- function(x) {
   y <- ifelse(is.na(x), NA,
               ifelse(x == 1, "Very little",
                      ifelse(x == 2, "Some",
-                            ifelse(x == 3, "Quite a bit", "Very much Often"))))
+                            ifelse(x == 3, "Quite a bit", "Very much"))))
   
   y <- factor(y, levels = c("Very little", "Some", "Quite a bit", "Very much"))
   
@@ -708,14 +782,17 @@ a111 <- likert(SE_items_likert, grouping=Data$study_group)
 ```
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
+
 plot(SE_items_likert_1, 
      # Group the items alphabetically
-group.order=names(SE_items),
+#group.order=names(SE_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
+center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
 plot.percent.high = FALSE,
 plot.percents=TRUE) 
+
 
 ```
 
@@ -724,7 +801,9 @@ plot.percents=TRUE)
 ### Study Group
 
 ```{r fig.height=10, fig.width=10,fig.align='center',error=TRUE}
-plot(a111,include.histogram=TRUE,wrap=200)
+plot(a111,include.histogram=TRUE,
+     center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+     wrap=200)
 ```
 
 ------------------------------------------------------------------------
@@ -736,7 +815,10 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 a112 <- likert(SE_items_likert, grouping=Data$AcUnit1)
 
-plot(a112,include.histogram=TRUE,wrap=200)
+plot(a112,
+     center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+
+     include.histogram=TRUE,wrap=200)
 
 
 ```
@@ -752,7 +834,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 a112 <- likert(SE_items_likert, grouping=Data$AcUnit2)
 
-plot(a112,include.histogram=TRUE,wrap=200)
+plot(a112,
+     center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+     include.histogram=TRUE,wrap=200)
 
 
 ```
@@ -847,7 +931,7 @@ a111 <- likert(QR_items_likert, grouping=Data$study_group)
 ```{r fig.height=3, fig.width=10,fig.align='center'}
 plot(QR_items_likert_1, 
      # Group the items alphabetically
-group.order=names(QR_items),
+#group.order=names(QR_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -987,7 +1071,7 @@ a111 <- likert(SF_items_likert, grouping=Data$study_group)
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(SF_items_likert_1, 
      # Group the items alphabetically
-group.order=names(SF_items),
+#group.order=names(SF_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1124,7 +1208,7 @@ a111 <- likert(CL_items_likert, grouping=Data$study_group)
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(CL_items_likert_1, 
      # Group the items alphabetically
-group.order=names(CL_items),
+#group.order=names(CL_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1265,7 +1349,7 @@ a111 <- likert(QI_items_likert, grouping=Data$study_group)
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(QI_items_likert_1, 
      # Group the items alphabetically
-group.order=names(QI_items),
+#group.order=names(QI_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1323,9 +1407,6 @@ Data %>%
   select( "Qistudent","Qiadvisor","Qifaculty","Qistaff","Qiadmin") %>% gg_miss_upset(., nsets = 10)
 
 ```
-
-
-
 
 ## Higher Order Learning
 
@@ -1405,7 +1486,7 @@ a111 <- likert(HO_items_likert, grouping=Data$study_group)
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(HO_items_likert_1, 
      # Group the items alphabetically
-group.order=names(HO_items),
+#group.order=names(HO_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1454,9 +1535,6 @@ plot(a112,include.histogram=TRUE,wrap=200)
 ```
 
 ------------------------------------------------------------------------
-
-
-
 
 ## Reflective and Integrative Learning
 
@@ -1532,7 +1610,7 @@ a111 <- likert(RI_items_likert, grouping=Data$study_group)
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 plot(RI_items_likert_1, 
      # Group the items alphabetically
-group.order=names(RI_items),
+#group.order=names(RI_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1773,7 +1851,7 @@ a111 <- likert(ET_items_likert, grouping=Data$study_group)
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(ET_items_likert_1, 
      # Group the items alphabetically
-group.order=names(ET_items),
+#group.order=names(ET_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1824,7 +1902,6 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-
 ### Missing Data
 
 ```{r}
@@ -1832,8 +1909,6 @@ Data %>%
   select( "Etgoals","Etorganize","Etexample","Etdraftfb","Etfeedback") %>% gg_miss_upset(., nsets = 10)
 
 ```
-
-
 
 ## Learning creative and Social skills
 
@@ -1867,7 +1942,6 @@ gt() %>%
 ```
 
  
-
 
 ------------------------------------------------------------------------
 
@@ -1907,7 +1981,7 @@ a111 <- likert(LC_items_likert, grouping=Data$study_group)
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 plot(LC_items_likert_1, 
      # Group the items alphabetically
-group.order=names(LC_items),
+#group.order=names(LC_items),
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
@@ -1955,4 +2029,380 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ```
 
+## Other
+
+### **Other**
+
+```{r}
+dd<-Data %>% dplyr::summarise(across(starts_with("t1") , ~ round(mean(.x, na.rm = TRUE),1)))
+
+
+
+df_t <- transpose(dd)
+#redefine row and column names
+rownames(df_t) <- colnames(dd)
+colnames(df_t) <- rownames(dd)
+colnames(df_t)<-"Score"
+df_t<-rownames_to_column(df_t,"Names")
+df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+
+df_t%>%
+gt() %>%
+  data_color(
+    columns = c(Score),
+    colors = scales::col_numeric(
+      # custom defined values - notice that order matters!
+      palette = c("#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"),
+      domain = NULL
+    )
+  ) 
+    
+
+```
+
+ 
+
+------------------------------------------------------------------------
+
+```{r}
+
+
+
+T1_carrer_items <- Data %>%
+  select( "t1_career_1","t1_career_2") 
+ #(To what extent do the following apply to you?)
+names(T1_carrer_items) <- c(
+t1_career_1="Your experience at this institution has helped clarify your career plans",
+t1_career_2="You have received supportive feedback from faculty, career advisers or other advisers about your career plans")
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+### Overall Evaluation - WORK IN PROGRESS
+##### The following questions provide you with an opportunity to comment on the overall academic experience at your institution.
+
+```{r fig.height=1.5, fig.width=10,fig.align='center'}
+evalexpres <- Data %>%
+  select( "evalexp") 
+ #(To what extent do the following apply to you?)
+names(evalexpres) <- c(
+evalexp="How would you evaluate your entire educational experience at this institution?")
+
+
+likert_recode_4.3 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Poor",
+                     ifelse(x == 2, "Fair",
+                            ifelse(x == 3, "Good", "Excellent"))))
+  
+  y <- factor(y, levels = c("Poor", "Fair", "Good", "Excellent"))
+  
+  return(y)
+}
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+evalexpres_likert <-as.data.frame(evalexpres) %>% 
+  mutate_all(likert_recode_4.3) 
+
+
+evalexpres_likert_1 <-as.data.frame(evalexpres) %>% 
+  mutate_all(likert_recode_4.3) %>% likert()
+
+##### Group by Country
+
+plot(evalexpres_likert_1, 
+     # Group the items alphabetically
+group.order=names(evalexpres),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE)
+
+
+
+```
+```{r fig.height=1.5, fig.width=10,fig.align='center'}
+
+
+sameinst <- Data %>%
+  select( "sameinst") 
+ #(To what extent do the following apply to you?)
+names(sameinst) <- c(
+sameinst="If you could start over again, would you go to the same institution you are now attending?")
+
+
+likert_recode_4.4 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Definitely no",
+                     ifelse(x == 2, "Probably no",
+                            ifelse(x == 3, "Probably yes", "Definitely yes"))))
+  
+  y <- factor(y, levels = c("Definitely no", "Probably no", "Probably yes", "Definitely yes"))
+  
+  return(y)
+}
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+sameinst_likert <-as.data.frame(sameinst) %>% 
+  mutate_all(likert_recode_4.4) 
+
+
+sameinst_likert_1 <-as.data.frame(sameinst) %>% 
+  mutate_all(likert_recode_4.4) %>% likert()
+
+##### Group by Country
+
+plot(sameinst_likert_1, 
+     # Group the items alphabetically
+group.order=names(sameinst),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE)
+```
+
+### Career
+```{r carrer, fig.height=2, fig.width=10,fig.align='center'}
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+T1_carrer_items_likert <-as.data.frame(T1_carrer_items) %>% 
+  mutate_all(likert_recode_4.1) 
+
+
+T1_carrer_items_likert_1 <-as.data.frame(T1_carrer_items) %>% 
+  mutate_all(likert_recode_4.1) %>% likert()
+
+##### Group by Country
+a111 <- likert(T1_carrer_items_likert, grouping=Data$study_group)
+
+
+plot(T1_carrer_items_likert_1, 
+     # Group the items alphabetically
+#group.order=names(T1_carrer_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("To what extent do the following apply to you?")
+```
+
+------------------------------------------------------------------------
+
+### Career Study Group
+
+```{r fig.height=4, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=F,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### Confidence
+
+```{r fig.height=4, fig.width=10,fig.align='center'}
+
+T1_confidence_items <- Data %>%
+  select( "t1_confidence_1","t1_confidence_2","t1_confidence_3","t1_confidence_4","t1_confidence_5") 
+
+#(How much confidence do you have in your ability to do the following?)
+names(T1_confidence_items) <- c(
+t1_confidence_1="Demonstrate effective work habits (punctuality, working productively with others, time and workload management, etc.) ",
+t1_confidence_2="Network with alumni or professionals to make potential career connections",
+t1_confidence_3="Communicate your knowledge, skills, and experiences to potential employers",
+t1_confidence_4="Use career-specific technology (devices, programs, or tools used by those in the field) ",
+t1_confidence_5="Work effectively with people of other backgrounds (economic, racial, ethnic, political, religious, etc.)")
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+T1_confidence_items_likert <-as.data.frame(T1_confidence_items) %>% 
+  mutate_all(likert_recode_4.1) 
+
+
+T1_confidence_items_likert_1 <-as.data.frame(T1_confidence_items) %>% 
+  mutate_all(likert_recode_4.1) %>% likert()
+
+##### Group by Country
+a111 <- likert(T1_confidence_items_likert, grouping=Data$study_group)
+
+
+plot(T1_confidence_items_likert_1, 
+     # Group the items alphabetically
+#group.order=names(T1_confidence_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+plot.percents=TRUE) +ggtitle("How much confidence do you have in your ability to do the following?")
+
+```
+
+### Confidence Study Group
+
+```{r fig.height=6, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=F,wrap=200)
+```
+
+------------------------------------------------------------------------
+
+### plan 
+
+```{r fig.height=5, fig.width=10,fig.align='center'}
+
+
+
+
+T1_plan_items <- Data %>%
+  select( "t1_plan_1","t1_plan_2","t1_plan_3","t1_plan_4","t1_plan_5","t1_plan_6","tmservice") 
+
+#(Which of the following have you done, or do you plan to do at this institution before you graduate (whether in person or online)?)
+
+names(T1_plan_items) <- c(
+t1_plan_1="Take a career exploration, planning, or development course",
+t1_plan_2="Attend a talk, panel discussion, or workshop about careers",
+t1_plan_3="Interview, shadow or network with someone in a career that you are considering",
+t1_plan_4="Participate in a career-related co-curricular activity (student organisation, professional society, co-curricular award, etc.)",
+t1_plan_5="Use resources and information (database or other digital tools, videos, guides, books, etc.) from career services",
+t1_plan_6="Meet with career services staff to explore your interests and future plans",
+tmservice="Engage in voluntary activity (whether related to your course/ institution or in your life outside your institution)")
+
+
+likert_recode_4.2 <- function(x) {
+  y <- ifelse(is.na(x), NA,
+              ifelse(x == 1, "Have not deicded",
+                     ifelse(x == 2, "Do not plan to do",
+                            ifelse(x == 3, "Plan to do", "Done or in progress"))))
+  
+  y <- factor(y, levels = c("Have not deicded", "Do not plan to do", "Plan to do", "Done or in progress"))
+  
+  return(y)
+}
+
+
+Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
+
+T1_plan_items_likert <-as.data.frame(T1_plan_items) %>% 
+  mutate_all(likert_recode_4.2) 
+
+
+T1_plan_items_likert_1 <-as.data.frame(T1_plan_items) %>% 
+  mutate_all(likert_recode_4.2) %>% likert()
+
+##### Group by Country
+a111 <- likert(T1_plan_items_likert, grouping=Data$study_group)
+
+
+plot(T1_plan_items_likert_1, 
+     # Group the items alphabetically
+#group.order=names(T1_plan_items),
+plot.percent.low = FALSE,
+legend.position = "right",
+#legend = "",
+plot.percent.high = FALSE,
+sort.frq="pos.asc",
+plot.percents=TRUE) +ggtitle("Which of the following have you done, or do you plan to do at this institution before you graduate (whether in person or online")
+
+
+
+
+```
+
+### Plan Study Group
+
+```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
+plot(a111,include.histogram=F,wrap=200)
+```
+
+
+```{r text mining, fig.align="center", fig.height=5, fig.width=10, echo=FALSE, message=FALSE, warning=FALSE}
+Question<-"improve_how"
+Q39<-Data  %>%  
+  filter( !is.na(`improve_how`)) %>% select(QI,`study_group`,`improve_how`)
+
+
+Q39_bigrams <- Q39 %>%
+  unnest_tokens(bigram, Question, token = "ngrams", n = 2)
+Q39_words <- Q39 %>%
+  unnest_tokens(bigram, Question) %>% 
+  filter(!bigram %in% stop_words$word) 
+Q39_bigrams_separated <- Q39_bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+Q39_bigrams_filtered <- Q39_bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  filter(!is.na(word1))
+library(stringr)
+
+# new bigram counts:
+Q39_bigram_counts <- Q39_bigrams_filtered %>% group_by(study_group,QI) %>%   dplyr::count(word1, word2, sort=T)
+#Bigram unite
+Q39_bigrams_united <- Q39_bigram_counts %>% filter(!is.na(word1)) %>% 
+  unite(bigram, word1, word2, sep = " ")
+
+
+
+
+#-----------------------
+
+Q39_bigrams_united %>% group_by(bigram,study_group) %>% 
+          filter( !is.na(QI))%>%
+  dplyr::summarise(avg_QI=mean(QI), nb_reviews=n(), ) %>% 
+  filter(nb_reviews>2) %>% 
+  arrange(desc(avg_QI)) %>% 
+  ggplot(aes(avg_QI, nb_reviews)) + 
+  geom_text(aes(label=bigram), vjust=1,hjust=1, check_overlap=T )+
+  geom_point(aes(colour=study_group))+
+  xlim(20,50)+
+    labs(title="What words were associated with High and Low Quality of interaction Scores",
+subtitle="Only words appearing more than 10 times are counted. Displaying Question: What could your institution do to improve students’ engagement in learning?")+
+   theme_classic()
+
+
+
+tidy_text <- Data %>%
+  select(improve_how,QI, courseCd)%>%
+#  filter(Year==2021) %>% 
+#  select(-Year) %>% 
+        filter( !is.na(improve_how))%>%
+dplyr::mutate(line = row_number())  %>%
+    unnest_tokens(word, improve_how) %>%
+    anti_join(stop_words) 
+
+
+tidy_text %>% group_by(word,courseCd) %>% 
+          filter( !is.na(QI))%>%
+  dplyr::summarise(avg_QI=mean(QI), nb_reviews=n(), ) %>% 
+  filter(nb_reviews>3) %>% 
+  arrange(desc(avg_QI)) %>% 
+  ggplot(aes(avg_QI, nb_reviews)) + 
+  geom_text(aes(label=word), vjust=1,hjust=1, check_overlap=T )+
+  geom_point(aes(colour=courseCd))+
+  xlim(20,50)+
+    labs(title="What words were associated with High and Low Quality of interaction Scores",
+subtitle="Only words appearing more than 10 times are counted. Displaying Question: What could your institution do to improve students’ engagement in learning?")+
+   theme_classic()
+
+
+
+
+
+```
 

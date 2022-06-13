@@ -20,6 +20,10 @@ library(tidytext)
 library(stringr)
 library(corrplot)
 library(grid)
+library(grid)
+library(scales)
+library(patchwork)
+
 
 
 df<-NULL

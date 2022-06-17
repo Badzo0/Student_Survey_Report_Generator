@@ -300,15 +300,15 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
   # Produce a radar-chart
   radarchart(
     df3,
-    pfcol = c("#c1dfea",NA),
-    pcol= c(NA,"#ff9248"), plty = 1, plwd = 5,
+    pfcol = c("#99999980",NA),
+    pcol= c(NA,"2"), plty = 1, plwd = 5,
     axistype = 4,
     title = "Institutional profile", caxislabels = c(0,15, 30, 45, 60),
     axislabcol = "black"
   )
   legend(
     x = "bottom", legend = c("Nat. Average","Institution"), horiz = T,
-    bty = "n", pch = 20 , col = c("Lightblue", "Orange"),
+    bty = "n", pch = 20 , col = c("grey", "red"),
     text.col = "black", cex = 1, pt.cex = 1.5
   )
 ```
@@ -781,6 +781,53 @@ a111 <- likert(SE_items_likert, grouping=Data$study_group)
 
 ```
 
+
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=SE, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(SE, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
+
+
+
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 
 plot(SE_items_likert_1, 
@@ -888,6 +935,50 @@ gt() %>%
 These questions explore students' opportunities to develop their skills to reason quantitatively -- to evaluate, support or critique arguments using numerical and statistical information.
 
 ------------------------------------------------------------------------
+
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=QR, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(QR, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
 
 ```{r}
 QR_items <- Data %>%
@@ -1026,6 +1117,51 @@ gt() %>%
 These questions explore the extent to which students interact with academic staff. Interactions with academic staff can positively influence cognitive growth, development and persistence of students.
 
 ------------------------------------------------------------------------
+
+
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=SF, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(SF, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
 
 ```{r}
 SF_items <- Data %>%
@@ -1167,6 +1303,50 @@ These questions explore the extent to which students collaborate with peers to s
 
 ------------------------------------------------------------------------
 
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=CL, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(CL, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
+
 ```{r}
 CL_items <- Data %>%
   select( "Claskhelp","Clexplain","Clstudy","Clproject") 
@@ -1303,6 +1483,51 @@ gt() %>%
 These questions explore student experiences of supportive relationships with a range of other people and roles on campus, thereby contributing to students' ability to find assistance when needed and to learn from and with those around them. Not applicable is available as a response option. 'Not applicable' responses have been removed from these results.
 
 ------------------------------------------------------------------------
+
+
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=QI, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(QI, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
 
 ```{r}
 QI_items <- Data %>%
@@ -1445,6 +1670,50 @@ These questions explore the extent to which students' work emphasises challengin
 
 ------------------------------------------------------------------------
 
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=HO, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(HO, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
+
 ```{r}
 HO_items <- Data %>%
   select( "Hoapply","Hoanalyze","Hoevaluate","Hoform") 
@@ -1573,6 +1842,50 @@ These questions explore the extent to which students relate their own understand
 
 ------------------------------------------------------------------------
 
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=RI, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(RI, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
+
 ```{r}
 RI_items <- Data %>%
   select( "Riintegrate","Risocietal","Ridiverse","Riownview","Riperspect","Rinewview","Riconnect") 
@@ -1698,6 +2011,50 @@ These questions explore the extent to which students actively engage with and an
 
 ------------------------------------------------------------------------
 
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=LS, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(LS, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
+
 ```{r}
 LS_items <- Data %>%
   select( "Lsreading","Lsnotes","Lssummary") 
@@ -1816,6 +2173,51 @@ gt() %>%
 These questions explore the extent to which students experience teaching practices that contribute to promoting comprehension and learning.
 
 ------------------------------------------------------------------------
+
+
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=ET, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(ET, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
 
 ```{r}
 ET_items <- Data %>%
@@ -1944,6 +2346,50 @@ gt() %>%
  
 
 ------------------------------------------------------------------------
+
+```{r fig.height=5, fig.width=10, fig.align='center'}
+
+
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE","LC")%>%
+        filter( sex==c(1,2))
+
+     library(ggstatsplot)
+
+     library(ggpubr)
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=LC, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(LC, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+ 
+```
+
+
 
 ```{r}
 LC_items <- Data %>%

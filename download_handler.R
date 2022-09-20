@@ -46,6 +46,12 @@ output$report <- downloadHandler(
     # can happen when deployed).
     tempReport <- file.path(tempdir(), reportname())
     file.copy(reportname(), tempReport, overwrite = TRUE)
+    tempReport2 <- file.path(tempdir(), "logo1.png")
+    file.copy("logo1.png", tempReport2, overwrite = TRUE)
+    tempReport2 <- file.path(tempdir(), "img7.png")
+    file.copy("img7.png", tempReport2, overwrite = TRUE)
+    tempReport2 <- file.path(tempdir(), "img8.png")
+    file.copy("img8.png", tempReport2, overwrite = TRUE)
     # Set up parameters to pass to Rmd document
     params <- parameters()
     

@@ -1,16 +1,58 @@
 ---
 title: "Student Survey.IE - Indicator Analysis 2022"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+
 params:
   n: NA
   obs: NA
+  avgr: NA
 ---
 
-#  {.tabset .tabset-fade}
+<!-- #  {.tabset .tabset-fade} -->
+
+## Introduction
+
+<center>![](logo1.png){width="600"}</center>
+
+<br> <br> <br>
+
+**Purpose**
+
+StudentSurvey.ie (the Irish Survey of Student Engagement; Suirbhé na hÉireann ar Rannpháirtíocht na Mac Léinn) asks students directly about their experiences of higher education in Ireland, including their academic, personal, and social development. For the purposes of StudentSurvey.ie, student engagement reflects two key elements. The first is the amount of time and effort that students put into their studies and other educationally beneficial activities. The second is how institutions deploy resources and organise curriculum and learning opportunities to encourage students to participate in meaningful activities linked to learning.
+
+**Method**
+
+The focus of the survey is on student engagement with learning, rather than student satisfaction. Student engagement with college life is important in enabling them to develop key capabilities, such as critical thinking, problem-solving, writing skills, team-work, and communication skills. The comprehensive survey consists of 64 questions, grouped by the engagement 'indicator' to which they relate. There is an additional body of questions that do not directly relate to a specific indicator, but that are included in the survey because of their contribution to a broad understanding of student engagement. Each indicator score is calculated from responses to the multiple questions that relate to that indicator.
+
+The indicators are:
+
+Higher-Order Learning Student-Faculty Interaction Reflective and Integrative Learning Effective Teaching Practices Quantitative Reasoning Quality of Interactions Learning Strategies Supportive Environment Collaborative Learning Learning, Creative and Social Skills
+
+There is a second survey, which is designed for postgraduate research (PGR) students (Masters by Research and PhD students). PGR StudentSurvey.ie runs every two years, with the next fieldwork period scheduled for spring 2023.
+
+**How is the indicator score for each indicator calculated?**
+
+Indicator scores are NOT percentages but rather represent relative performance. They are calculated scores to enable interpretation of the data at a higher level than individual questions, i.e., to act as signposts to help the reader to navigate the large data set. Responses to questions are converted to a 60-point scale, with the lowest response placed at 0 and the highest response placed at 60. The following question is used to illustrate this point.
+
+![](img8.png)
+
+Indicator scores are calculated for a respondent when they answer all or almost all related questions. The exact number of responses required varies according to the indicator, based on psychometric testing undertaken for the North American National Survey of Student Engagement (NSSE).
+
+The indicator score is calculated from the weighted mean of (non-blank) responses given. Indicator scores for any particular student group -- for example, the first year undergraduate cohort -- are calculated as the mean of individual indicator scores.
+
+Consequently, and crucially, indicator scores cannot be combined across indicators to calculate an average overall indicator score in any meaningful or statistically sound way.
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ## General
 
-### ***Indicator Overview***
+### Response numbers
+
+This year **2475 Undergraduate 1st year(Y1), Undergraduate final year (YF) and taught postgraduate (PGT)** students were invited to participate in the survey. We collected **790 responses (32%)** which is above the national average response rate of 28%.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -33,26 +75,187 @@ library(naniar)
 library(gt)
 library(fmsb)
 library(grid)
-library(scales)
-library(patchwork)
-library(tidytext)
-library(ggraph)
-library(igraph)
-library(tidyr)
-library(dplyr)
-library(stringr)
 
-Data <- read_excel(params$n, sheet = "Data")
-ngramnum<- params$obs
+
+
+#Data <- read_excel(params$n, sheet = "Data")
+#ngramnum<- params$obs
+
+Data <- read_excel("~/Documents/StudentSurvey test file/Testfile2022.xlsx", 
+    sheet = "Data")
+ngramnum=4
+avgr="All StudentSurvey.ie"
 
 
     percent <- function(x, digits = 1, format = "f", ...) {
         paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
     }
 
+
 ```
 
-```{r}
+
+
+```{r include=FALSE}
+
+AllStudentSurvey.ie<-    data.frame(
+      stringsAsFactors = FALSE,
+                        All.StudentSurvey.ie = c("CL","ET",
+                                                 "HO","LS","LC","QI","QR",
+                                                 "RI","SF","SE"),
+                                          Y1 = c(28.52,
+                                                 32.64,33.52,31.08,31.63,38.58,
+                                                 19.16,30.46,10.91,29.92),
+                                          YF = c(30.96,
+                                                 31.76,34.19,30.96,33.9,36.95,
+                                                 21.57,31.73,14.96,26.2),
+                                         PGT = c(28.15,
+                                                 35.59,38.26,34.9,35.02,40.05,
+                                                 22.99,35.5,15.09,28.16)
+                      )
+
+  
+Universities<-    data.frame(
+               stringsAsFactors = FALSE,
+                    rowname = c("CL","ET","HO",
+                                                      "LS","LC","QI","QR","RI",
+                                                      "SF","SE"),
+                                               Y1 = c(28.21,31.4,34.74,
+                                                      31.45,31.41,37.66,19.68,
+                                                      31.34,8.94,30.64),
+                                               YF = c(30.26,31.09,35.55,
+                                                      31.62,34.31,36.47,22.6,
+                                                      32.72,14.01,26.72),
+                                              PGT = c(28.89,35.66,38.81,
+                                                      34.98,35.26,39.89,23.34,
+                                                      36.42,15.8,28.49)
+                  )
+
+  
+  
+Higher.Education.Institutions<-   data.frame(
+                                                                                                                                                                                   stringsAsFactors = FALSE,
+                                                                                                   NA,
+                                    StudentSurvey.ie.Technological.Higher.Education.Institutions = c("CL","ET","HO",
+                                                                                                     "LS","LC","QI",
+                                                                                                     "QR","RI","SF",
+                                                                                                     "SE"),
+                                                                                              Y1 = c(29.28,33.75,
+                                                                                                     31.86,30.22,31.68,
+                                                                                                     39.28,19.05,29.05,
+                                                                                                     13.33,29.04),
+                                                                                              YF = c(31.38,32.4,
+                                                                                                     32.99,30.39,33.53,
+                                                                                                     37.08,21.14,30.7,
+                                                                                                     15.87,25.49),
+                                                                                             PGR = c(24.89,35.23,
+                                                                                                     36.81,34.08,33.84,
+                                                                                                     39.74,21.5,33.09,
+                                                                                                     12.8,26.44)
+                                  )
+  
+  
+  
+Other.Institutions<- data.frame(
+                     stringsAsFactors = FALSE,
+                       StudentSurvey.ie.Other.Institutions = c("CL","ET",
+                                                               "HO","LS","LC","QI",
+                                                               "QR","RI","SF",
+                                                               "SE"),
+                                                        Y1 = c(26.66,34.98,
+                                                               34.12,33.09,32.79,
+                                                               40.98,16.39,31.93,
+                                                               11.38,29.69),
+                                                        YF = c(32.14,31.49,
+                                                               34.14,30.96,33.92,
+                                                               38.69,18.65,32.79,
+                                                               14.5,27.66),
+                                                       PGT = c(28.7,35.7,
+                                                               37.41,35.51,35.34,
+                                                               41.03,23.16,34.21,
+                                                               14.61,28.73)
+                     )
+
+avga=data.frame(0)
+       ifelse(avgr=="All StudentSurvey.ie",avga<-AllStudentSurvey.ie,
+              ifelse(avgr=="StudentSurvey.ie Universities",avga<-Universities,
+                     ifelse(avgr=="StudentSurvey.ie Technological Higher Education Institutions",avga<-Higher.Education.Institutions,avgr<-Other.Institutions)))
+       
+       
+
+```
+
+```{r include=FALSE}
+StudentSurvey.ie<-   data.frame(
+          CL = c(29.18),
+          ET = c(33.08),
+          HO = c(34.87),
+          LS = c(31.96),
+          LC = c(33.16),
+          QI = c(38.39),
+          QR = c(20.82),
+          RI = c(32.02),
+          SF = c(13.17),
+          SE = c(28.33)
+                     )
+
+
+Universities<-  data.frame(
+          CL = c(28.93),
+          ET = c(32.64),
+          HO = c(36.21),
+          LS = c(32.57),
+          LC = c(33.35),
+          QI = c(38),
+          QR = c(21.54),
+          RI = c(33.21),
+          SF = c(12.32),
+          SE = c(28.97)
+                  )  
+
+Higher.Education.Institutions<- data.frame(
+          CL = c(29.64),
+          ET = c(33.37),
+          HO = c(32.88),
+          LS = c(30.72),
+          LC = c(32.67),
+          QI = c(38.41),
+          QR = c(20.17),
+          RI = c(30.15),
+          SF = c(14.3),
+          SE = c(27.31)
+                                  )  
+
+
+
+Other.Institutions<- data.frame(
+          CL = c(28.74),
+          ET = c(34.36),
+          HO = c(35.33),
+          LS = c(33.44),
+          LC = c(34.02),
+          QI = c(40.35),
+          QR = c(19.45),
+          RI = c(32.96),
+          SF = c(13.35),
+          SE = c(28.81)
+                     )
+
+
+avgm=data.frame(0)
+ifelse(avgr=="All StudentSurvey.ie",avgm<-StudentSurvey.ie,
+              ifelse(avgr=="StudentSurvey.ie Universities",avgm<-Universities,
+                     ifelse(avgr=="StudentSurvey.ie Technological Higher Education Institutions",avgm<-Higher.Education.Institutions,avgr<-Other.Institutions)))
+
+
+
+
+
+```
+
+
+
+```{r fig.align='center'}
     High_level<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%   dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
 
 
@@ -71,6 +274,24 @@ names(High_level)<- c(
 
 
 
+Data %>% dplyr::group_by(study_group) %>% dplyr::summarise(n=n()) %>% 
+                    reactable(  compact = T,  wrap = TRUE)
+
+
+
+```
+
+<br><br>
+
+<br><br>
+
+### Indicator overview
+
+Overview of the main indicators broken down by Y1,YF and PGT.
+
+```{r}
+
+
 #Transpose
 High_level<-as.data.frame(High_level)
 rownames(High_level) <- High_level$study_group
@@ -79,13 +300,13 @@ transpose <- as.data.frame(t(as.matrix(High_level)))
 transpose <- transpose(High_level)
 rownames(transpose) <- colnames(High_level)
 colnames(transpose) <- rownames(High_level)
-
-
+names(transpose)<-"Score"
 #Color function
 BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
 #Create a table
 reactable(
-  transpose,compact = TRUE,
+  transpose,compact = T,
+  fullWidth = T,
   defaultColDef = colDef(
     style = function(value) {
       if (!is.numeric(value)) return()
@@ -95,13 +316,19 @@ reactable(
     },
     format = colFormat(percent = F, digits = 1),
     minWidth = 50
-  )
+  ),
+  columns = list(
+    "Score" = colDef(width = 55)   # 50% width, 200px minimum
+  ),width = 350
 )
 
 
-```
 
-```{r}
+
+
+
+
+
   High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
 
 names(High_level)<- c(
@@ -145,11 +372,21 @@ reactable(
     },
     format = colFormat(percent = F, digits = 1),
     minWidth = 50
-  )
+  ),
+  columns = list(
+    "PGT" = colDef(width = 55),
+    "Y1" = colDef(width = 55),
+    "YF" = colDef(width = 55)),width = 450
 )
 
 
 ```
+
+<br><br>
+
+### Comparisons to national average
+
+Comparing MIC to the national average of all Universities (excluding IOT's and Other institutions).
 
 ```{r fig.height=5, fig.width=12}
 
@@ -197,24 +434,10 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
   #              18.94595,24.90012,18.94595)
   # )
   # 
-  avg<- data.frame(
-    stringsAsFactors = FALSE,
-    rowname = c("HO", "RI", "QR", "LS", "CL", "SF", "ET", "QI", "SE"),
-    PGT = c(38.6, 33.9, 21.6, 34.4, 24.6, 12.3, 34.7, 31.7, 23.2),
-    YF = c(34.2, 31.7, 21.7, 30.9, 31.0, 15.1, 31.8, 36.9, 23.5),
-    Y1 = c(33.5, 28.6, 17.5, 30.6, 23.6, 8.1, 32.9, 29.5, 24.8)
-  )
   
   
-  avg<-data.frame(
-    stringsAsFactors = FALSE,
-    rowname = c("HO", "RI", "QR", "LS", "CL", "SF", "ET", "QI", "SE","LC"),
-            Y1 = c(33.53,30.45,19.24,31.06,28.49,10.9,
-                   32.6,38.54,29.91,31.59),
-            YF = c(34.21,31.71,21.71,30.96,30.96,
-                   15.05,31.79,36.89,26.21,33.9),
-           PGT = c(38.24,35.48,23.05,34.86,28.17,15.08,35.54,40.02,28.23,35.02)
-  )
+ avg<- avga
+  
   
   
   
@@ -258,27 +481,16 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
 
 ```
 
+<br><br>
+
 ```{r fig.height=12, fig.width=12}
 
   df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
     #df3<-column_to_rownames(df3, "study_group")
   #avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)
+
   
-  
-  
-  
-  avg<-  data.frame(
-          HO = c(34.88),
-          RI = c(32.01),
-          QR = c(20.92),
-          LS = c(31.94),
-          CL = c(29.17),
-          SF = c(13.18),
-          ET = c(33.06),
-          QI = c(38.35),
-          SE = c(28.35),
-          LC = c(33.14)
-  )
+  avg<-avgm
   
   df3<-data.frame(rbind(rep(60, 10), rep(0, 10),avg,
                         df3 ))%>% round(0)
@@ -300,18 +512,20 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
   # Produce a radar-chart
   radarchart(
     df3,
-    pfcol = c("#99999980",NA),
-    pcol= c(NA,"2"), plty = 1, plwd = 5,
+    pfcol = c("#c1dfea",NA),
+    pcol= c(NA,"#ff9248"), plty = 1, plwd = 5,
     axistype = 4,
     title = "Institutional profile", caxislabels = c(0,15, 30, 45, 60),
     axislabcol = "black"
   )
   legend(
     x = "bottom", legend = c("Nat. Average","Institution"), horiz = T,
-    bty = "n", pch = 20 , col = c("grey", "red"),
+    bty = "n", pch = 20 , col = c("Lightblue", "Orange"),
     text.col = "black", cex = 1, pt.cex = 1.5
   )
 ```
+
+<br><br>
 
 ```{r eval=FALSE, fig.height=12, fig.width=12, include=FALSE}
 
@@ -368,10 +582,23 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
   )
 ```
 
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ## Qualitative Analysis
 
-### ***Qualitative Analysis - What does your institution do best to engage students in learning?***
+To promote the use of qualitative data we employed the use of Bigram networks. To move beyond counting word occurrences which often contain little to no information we decided to tokenize consecutive two-word sequences within each comment provided by students, as they tend to capture main topics better than individual words. These sequences are called bigrams. They show repeated core words and visualize some (but not all) of the most talked about topics.
+
+In the network graph below you can see how those bigram sequences relate to each other. The arrows linking words show the direction and strength of association. The charts show bigrams of at least 2-4 cases.
+
+Additionally, you can use the table underneath the graph to browse and filter through the comments.
+
+![](img7.png)
+
+------------------------------------------------------------------------
+
+<br><br>
+
+### What does your institution do best to engage students in learning?
 
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 
@@ -385,7 +612,7 @@ library(tidyr)
 library(dplyr)
 
 Q39<-Data  %>%  
-  filter( !is.na(`best_aspects`)) %>% select(`study_group`,`best_aspects`)
+  filter( !is.na(`best_aspects`)) %>% filter(`best_aspects`!= 0) %>%  select(`study_group`,`best_aspects`)
 
 
 Q39_bigrams <- Q39 %>%
@@ -437,11 +664,13 @@ if (5 >max(Q39_bigram_counts$n)) {
 
 ```
 
+<br><br>
+
 ```{r}
 
 
  Data %>%
-  select(`study_group`,`CourseNm`, `best_aspects`) %>% drop_na(`best_aspects`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`best_aspects`)  %>% 
+  select(`study_group`,`CourseNm`, `best_aspects`) %>%filter(`best_aspects`!= 0) %>% drop_na(`best_aspects`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`best_aspects`)  %>% 
 reactable(
    defaultSorted = c("Group"),
   groupBy = "Group",
@@ -455,7 +684,7 @@ reactable(
   )
 ```
 
-### ***Qualitative Analysis - What could your institution do to improve students' engagement in learning?***
+### What could your institution do to improve students' engagement in learning?
 
 ```{r fig.height=4, fig.width=10,fig.align='center', error=TRUE,include=TRUE}
 
@@ -469,7 +698,7 @@ library(tidyr)
 library(dplyr)
 
 Q39<-Data  %>%  
-  filter( !is.na(`improve_how`)) %>% select(`study_group`,`improve_how`)
+  filter( !is.na(`improve_how`)) %>% filter(`improve_how`!= 0) %>%  select(`study_group`,`improve_how`)
 
 
 Q39_bigrams <- Q39 %>%
@@ -521,11 +750,13 @@ if (2 >max(Q39_bigram_counts$n)) {
 
 ```
 
+<br><br>
+
 ```{r}
 
 
  Data %>%
-  select(`study_group`,`CourseNm`, `improve_how`) %>% drop_na(`improve_how`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`improve_how`)  %>% 
+  select(`study_group`,`CourseNm`, `improve_how`) %>% filter(`improve_how`!= 0) %>%drop_na(`improve_how`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`improve_how`)  %>% 
 reactable(
    defaultSorted = c("Group"),
   groupBy = "Group",
@@ -539,7 +770,9 @@ reactable(
   )
 ```
 
-### ***Withdrawal question***
+<br><br>
+
+### Withdrawal question
 
 ```{r fig.height=8, fig.width=9}
 
@@ -566,13 +799,14 @@ plot1<- ggplot(aa) +
   theme_minimal()+geom_text( position = position_dodge(width = .9),    # move to center of bars
               vjust = -0.5,    # nudge above top of bar
               size = 3) +theme(axis.text.x = element_text( hjust = 1,
-                           size = 7, angle = 60))+scale_y_continuous(limits=c(0,370))+xlab("Withdraval")
- 
+                           size = 10, angle = 65))+scale_y_continuous(limits=c(0,170))+xlab("Withdraval")
+
+
 
  library(scales)
  library(patchwork)
- aa2<-aa %>% mutate(total= case_when(Gender == "Female" ~ 670,
-                           Gender ==  "Male" ~ 119),
+ aa2<-aa %>% mutate(total= case_when(Gender == "Female" ~ length(Data$sex[Data$sex==2]),
+                           Gender ==  "Male" ~ length(Data$sex[Data$sex==1])),
                PCT=  n/total) 
  plot2<-ggplot(aa2) +
   aes(x = withdrawal_, fill = Gender,group=Gender,  y=PCT,label=percent(PCT)) +
@@ -594,13 +828,15 @@ plot1<- ggplot(aa) +
 
 ```
 
-### ***Withdrawal question: Other (please state) (Text)***
+<br><br>
+
+### Withdrawal question: Other (please state) (Text)
 
 ```{r}
 
 
  Data %>%
-  select(`study_group`,`CourseNm`, `withdrawal_other`) %>% drop_na(`withdrawal_other`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`withdrawal_other`)  %>% 
+  select(`study_group`,`CourseNm`, `withdrawal_other`) %>% filter(`withdrawal_other` != 0) %>%  drop_na(`withdrawal_other`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`withdrawal_other`)  %>% 
 reactable(
    defaultSorted = c("Group"),
   groupBy = "Group",
@@ -614,7 +850,9 @@ reactable(
   )
 ```
 
-### ***Qualitative Analysis - Is there anything this institution could do better to help students develop their career plans or gain work-related skills? Please describe***
+<br><br>
+
+### Is there anything this institution could do better to help students develop their career plans or gain work-related skills? Please describe
 
 ```{r fig.height=4, fig.width=10,fig.align='center', error=TRUE,include=TRUE}
 
@@ -628,7 +866,7 @@ library(tidyr)
 library(dplyr)
 
 Q39<-Data  %>%  
-  filter( !is.na(`t1_feedback`)) %>% select(`study_group`,`t1_feedback`)
+  filter( !is.na(`t1_feedback`)) %>%filter(`t1_feedback`!= 0) %>% select(`study_group`,`t1_feedback`)
 
 
 Q39_bigrams <- Q39 %>%
@@ -680,11 +918,13 @@ if (2 >max(Q39_bigram_counts$n)) {
 
 ```
 
+<br><br>
+
 ```{r}
 
 
  Data %>%
-  select(`study_group`,`CourseNm`, `t1_feedback`) %>% drop_na(`t1_feedback`) %>% dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`t1_feedback`)  %>% 
+  select(`study_group`,`CourseNm`, `t1_feedback`) %>% drop_na(`t1_feedback`) %>% filter(`t1_feedback` !=0) %>%  dplyr::rename("Group"=`study_group`, "Course"=`CourseNm`, "Question"=`t1_feedback`)  %>% 
 reactable(
    defaultSorted = c("Group"),
   groupBy = "Group",
@@ -698,9 +938,13 @@ reactable(
   )
 ```
 
-## Supportive Environment
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Supportive Environment**
+## Indicator analysis
+
+### Supportive Environment
+
+These questions explore students' perceptions of how much an institution emphasises services and activities that support their learning and development.
 
 ```{r}
 
@@ -732,12 +976,52 @@ gt() %>%
     
 ```
 
- 
-
-These questions explore students' perceptions of how much an institution emphasises services and activities that support their learning and development.
-(The scale only includes "very little" as a negative answer. This can be changed in the code if needed)
+<br>
 
 ------------------------------------------------------------------------
+
+<br><br>
+
+```{r fig.align ='center'}
+library(ggsignif)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=SE, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(SE, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
+
+library(ggstatsplot)
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+```
 
 ```{r}
 SE_items <- Data %>%
@@ -781,52 +1065,9 @@ a111 <- likert(SE_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
-
-
-     Response_boxplot<-Data %>%
-        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
-        filter( sex==c(1,2))
-
-     library(ggstatsplot)
-
-     library(ggpubr)
-
-a<-ggplot(Response_boxplot, aes(x=study_group, y=SE, fill=study_group)) +
-  geom_violin(width = 0.5,
-                             alpha = 0.6)+
-  geom_boxplot(width = 0.1,
-        alpha = 0.9,
-        geom  = "boxplot", fill="white") +
-      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
-
-dd<-Data %>%                                           # Weighted mean by group
-  group_by(study_group) %>% 
-   dplyr::summarise(a=weighted.mean(SE, Weighting_var, na.rm = TRUE)) 
-Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
-                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
-                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
-
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
- 
-```
-
-
-
-
+#### Total response
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 
@@ -843,9 +1084,13 @@ plot.percents=TRUE)
 
 ```
 
+<br><br>
+
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=10, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,
@@ -855,7 +1100,9 @@ plot(a111,include.histogram=TRUE,
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -872,7 +1119,9 @@ plot(a112,
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -890,7 +1139,9 @@ plot(a112,
 
 ------------------------------------------------------------------------
 
-### Missing Data
+<br><br>
+
+#### Missing Data
 
 ```{r}
 Data %>%
@@ -899,9 +1150,13 @@ Data %>%
 
 ```
 
-## Quantitative Reasoning
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Quantitative Reasoning**
+### Quantitative Reasoning
+
+<br>
+
+These questions explore students' opportunities to develop their skills to reason quantitatively -- to evaluate, support or critique arguments using numerical and statistical information.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("QR") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -930,22 +1185,20 @@ gt() %>%
 
 ```
 
- 
+<br>
 
-These questions explore students' opportunities to develop their skills to reason quantitatively -- to evaluate, support or critique arguments using numerical and statistical information.
+<br><br>
 
 ------------------------------------------------------------------------
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
+```{r fig.align ='center'}
 
-
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=QR, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -954,8 +1207,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=QR, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -964,6 +1216,9 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
 
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
+
+library(ggstatsplot)
 ggstatsplot:::centrality_ggrepel(
   data = Data,
   plot = a,
@@ -975,10 +1230,8 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
 ```
-
-
 
 ```{r}
 QR_items <- Data %>%
@@ -1019,6 +1272,10 @@ a111 <- likert(QR_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=3, fig.width=10,fig.align='center'}
 plot(QR_items_likert_1, 
      # Group the items alphabetically
@@ -1031,9 +1288,13 @@ plot.percents=TRUE)
 
 ```
 
+<br><br>
+
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=5, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=80)
@@ -1041,7 +1302,9 @@ plot(a111,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=5, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1057,7 +1320,9 @@ plot(a112,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=5, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1073,7 +1338,9 @@ plot(a112,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Missing Data
+<br><br>
+
+#### Missing Data
 
 ```{r}
 Data %>%
@@ -1081,9 +1348,13 @@ Data %>%
 
 ```
 
-## Student-Faculty Interaction
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Student-Faculty Interaction**
+### Student-Faculty Interaction
+
+<br>
+
+These questions explore the extent to which students interact with academic staff. Interactions with academic staff can positively influence cognitive growth, development and persistence of students.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("SF") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -1112,23 +1383,21 @@ gt() %>%
 
 ```
 
- 
+<br>
 
-These questions explore the extent to which students interact with academic staff. Interactions with academic staff can positively influence cognitive growth, development and persistence of students.
+<br><br>
 
 ------------------------------------------------------------------------
 
+```{r fig.align ='center'}
+library(ggstatsplot)
+library(ggrepel)
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
-
-
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
-        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
-        filter( sex==c(1,2))
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=SF, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -1137,31 +1406,40 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=SF, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
-  group_by(study_group) %>% 
+  group_by(study_group)%>%
    dplyr::summarise(a=weighted.mean(SF, Weighting_var, na.rm = TRUE)) 
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
- 
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(SF,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
 ```
 
+<br><br><br><br>
 
+#### Total response
 
 ```{r}
 SF_items <- Data %>%
@@ -1218,7 +1496,9 @@ plot.percents=TRUE)
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=80)
@@ -1226,7 +1506,9 @@ plot(a111,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1242,7 +1524,9 @@ plot(a112,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1258,7 +1542,9 @@ plot(a112,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Missing Data
+<br><br>
+
+#### Missing Data
 
 ```{r}
 Data %>%
@@ -1266,9 +1552,13 @@ Data %>%
 
 ```
 
-## Collaborative Learning
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Collaborative Learning**
+### Collaborative Learning
+
+<br>
+
+These questions explore the extent to which students collaborate with peers to solve problems or to master difficult material, thereby deepening their understanding
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("CL") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -1297,22 +1587,20 @@ gt() %>%
 
 ```
 
- 
-
-These questions explore the extent to which students collaborate with peers to solve problems or to master difficult material, thereby deepening their understanding
+<br>
 
 ------------------------------------------------------------------------
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
+<br><br>
 
-
+```{r fig.align ='center'}
+library(ggstatsplot)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=CL, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -1321,8 +1609,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=CL, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -1330,6 +1617,8 @@ dd<-Data %>%                                           # Weighted mean by group
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 ggstatsplot:::centrality_ggrepel(
   data = Data,
@@ -1342,10 +1631,11 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
+
 ```
 
-
+<br><br>
 
 ```{r}
 CL_items <- Data %>%
@@ -1385,6 +1675,10 @@ a111 <- likert(CL_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(CL_items_likert_1, 
      # Group the items alphabetically
@@ -1399,7 +1693,9 @@ plot.percents=TRUE)
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=80)
@@ -1407,7 +1703,9 @@ plot(a111,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1423,7 +1721,9 @@ plot(a112,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1439,7 +1739,9 @@ plot(a112,include.histogram=TRUE,wrap=80)
 
 ------------------------------------------------------------------------
 
-### Missing Data
+<br><br>
+
+#### Missing Data
 
 ```{r}
 Data %>%
@@ -1447,9 +1749,13 @@ Data %>%
 
 ```
 
-## Quality of Interactions
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Quality of Interactions**
+### Quality of Interactions
+
+<br>
+
+These questions explore student experiences of supportive relationships with a range of other people and roles on campus, thereby contributing to students' ability to find assistance when needed and to learn from and with those around them. Not applicable is available as a response option. 'Not applicable' responses have been removed from these results.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("QI") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -1478,23 +1784,20 @@ gt() %>%
 
 ```
 
- 
-
-These questions explore student experiences of supportive relationships with a range of other people and roles on campus, thereby contributing to students' ability to find assistance when needed and to learn from and with those around them. Not applicable is available as a response option. 'Not applicable' responses have been removed from these results.
+<br>
 
 ------------------------------------------------------------------------
 
+<br><br>
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
-
-
+```{r fig.align ='center'}
+library(ggstatsplot)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=QI, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -1503,8 +1806,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=QI, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -1512,6 +1814,8 @@ dd<-Data %>%                                           # Weighted mean by group
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 ggstatsplot:::centrality_ggrepel(
   data = Data,
@@ -1524,10 +1828,11 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
+
 ```
 
-
+<br><br>
 
 ```{r}
 QI_items <- Data %>%
@@ -1571,6 +1876,10 @@ a111 <- likert(QI_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(QI_items_likert_1, 
      # Group the items alphabetically
@@ -1585,7 +1894,9 @@ plot.percents=TRUE)
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=200)
@@ -1593,7 +1904,9 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1609,7 +1922,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1625,7 +1940,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Missing Data
+<br><br>
+
+#### Missing Data
 
 ```{r}
 Data %>%
@@ -1633,9 +1950,13 @@ Data %>%
 
 ```
 
-## Higher Order Learning
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Higher Order Learning**
+### Higher Order Learning
+
+<br>
+
+These questions explore the extent to which students' work emphasises challenging cognitive tasks, such as application, analysis, judgement, and synthesis.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("HO") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -1664,31 +1985,18 @@ gt() %>%
 
 ```
 
- 
-
-These questions explore the extent to which students' work emphasises challenging cognitive tasks, such as application, analysis, judgement, and synthesis.
+<br>
 
 ------------------------------------------------------------------------
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
+<br><br>
 
+```{r}
 
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
-
-     library(ggstatsplot)
-
-     library(ggpubr)
-
-a<-ggplot(Response_boxplot, aes(x=study_group, y=HO, fill=study_group)) +
-  geom_violin(width = 0.5,
-                             alpha = 0.6)+
-  geom_boxplot(width = 0.1,
-        alpha = 0.9,
-        geom  = "boxplot", fill="white") +
-      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 
 dd<-Data %>%                                           # Weighted mean by group
@@ -1698,6 +2006,21 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
 
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=HO, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
+
+
+library(ggstatsplot)
 ggstatsplot:::centrality_ggrepel(
   data = Data,
   plot = a,
@@ -1709,10 +2032,10 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
 ```
 
-
+<br><br>
 
 ```{r}
 HO_items <- Data %>%
@@ -1752,6 +2075,10 @@ a111 <- likert(HO_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(HO_items_likert_1, 
      # Group the items alphabetically
@@ -1765,7 +2092,9 @@ plot.percents=TRUE) +ggtitle("During the current academic year, how much has you
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=200)
@@ -1773,7 +2102,9 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1789,7 +2120,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1805,9 +2138,13 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-## Reflective and Integrative Learning
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Reflective and Integrative Learning**
+### Reflective and Integrative Learning
+
+<br>
+
+These questions explore the extent to which students relate their own understanding and experiences to the learning content being used.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("RI") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -1836,22 +2173,20 @@ gt() %>%
 
 ```
 
- 
-
-These questions explore the extent to which students relate their own understanding and experiences to the learning content being used.
+<br>
 
 ------------------------------------------------------------------------
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
+<br><br>
 
-
+```{r fig.align ='center'}
+library(ggstatsplot)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=RI, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -1860,8 +2195,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=RI, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -1869,6 +2203,8 @@ dd<-Data %>%                                           # Weighted mean by group
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 ggstatsplot:::centrality_ggrepel(
   data = Data,
@@ -1881,10 +2217,11 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
+
 ```
 
-
+<br><br>
 
 ```{r}
 RI_items <- Data %>%
@@ -1920,6 +2257,10 @@ a111 <- likert(RI_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 plot(RI_items_likert_1, 
      # Group the items alphabetically
@@ -1934,7 +2275,9 @@ plot.percents=TRUE) +ggtitle("During the current academic year, about how often 
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=200)
@@ -1942,7 +2285,9 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1958,7 +2303,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -1974,9 +2321,13 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-## Learning Strategies
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Learning Strategies**
+### Learning Strategies
+
+<br>
+
+These questions explore the extent to which students actively engage with and analyse course material, rather than approaching learning passively.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("LS") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -2005,22 +2356,20 @@ gt() %>%
 
 ```
 
- 
-
-These questions explore the extent to which students actively engage with and analyse course material, rather than approaching learning passively.
+<br>
 
 ------------------------------------------------------------------------
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
+<br><br>
 
-
+```{r fig.align ='center'}
+library(ggstatsplot)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=LS, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -2029,8 +2378,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=LS, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -2038,6 +2386,8 @@ dd<-Data %>%                                           # Weighted mean by group
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 ggstatsplot:::centrality_ggrepel(
   data = Data,
@@ -2050,10 +2400,11 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
+
 ```
 
-
+<br><br>
 
 ```{r}
 LS_items <- Data %>%
@@ -2084,6 +2435,10 @@ a111 <- likert(LS_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(LS_items_likert_1, 
      # Group the items alphabetically
@@ -2097,7 +2452,9 @@ plot.percents=TRUE) +ggtitle("During the current academic year, about how often 
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=200)
@@ -2105,7 +2462,9 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -2121,7 +2480,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -2137,9 +2498,13 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-## Effective Teaching Practices
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Effective Teaching Practices**
+### Effective Teaching Practices
+
+<br>
+
+These questions explore the extent to which students experience teaching practices that contribute to promoting comprehension and learning.
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("ET") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -2168,23 +2533,20 @@ gt() %>%
 
 ```
 
- 
-
-These questions explore the extent to which students experience teaching practices that contribute to promoting comprehension and learning.
+<br>
 
 ------------------------------------------------------------------------
 
+<br><br>
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
-
-
+```{r fig.align ='center'}
+library(ggstatsplot)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=ET, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -2193,8 +2555,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=ET, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -2202,6 +2563,8 @@ dd<-Data %>%                                           # Weighted mean by group
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 ggstatsplot:::centrality_ggrepel(
   data = Data,
@@ -2214,10 +2577,11 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
+
 ```
 
-
+<br><br>
 
 ```{r}
 ET_items <- Data %>%
@@ -2250,6 +2614,10 @@ a111 <- likert(ET_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 plot(ET_items_likert_1, 
      # Group the items alphabetically
@@ -2264,7 +2632,9 @@ plot.percents=TRUE) +ggtitle("During the current academic year, to what extent h
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=200)
@@ -2272,7 +2642,9 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -2288,7 +2660,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -2304,7 +2678,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Missing Data
+<br><br>
+
+#### Missing Data
 
 ```{r}
 Data %>%
@@ -2312,9 +2688,9 @@ Data %>%
 
 ```
 
-## Learning creative and Social skills
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Learning creative and Social skills**
+### Learning creative and Social skills
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("LC") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
@@ -2343,20 +2719,20 @@ gt() %>%
 
 ```
 
- 
+<br>
 
 ------------------------------------------------------------------------
 
-```{r fig.height=5, fig.width=10, fig.align='center'}
+<br><br>
 
-
+```{r fig.align ='center'}
+library(ggstatsplot)
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE","LC")%>%
         filter( sex==c(1,2))
 
-     library(ggstatsplot)
-
-     library(ggpubr)
+Response_boxplot$study_group <- factor(Response_boxplot$study_group, levels=c("Y1", "YF", "PGT"))
 
 a<-ggplot(Response_boxplot, aes(x=study_group, y=LC, fill=study_group)) +
   geom_violin(width = 0.5,
@@ -2365,8 +2741,7 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=LC, fill=study_group)) +
         alpha = 0.9,
         geom  = "boxplot", fill="white") +
       geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
-  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,71,77))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
-
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
 
 dd<-Data %>%                                           # Weighted mean by group
   group_by(study_group) %>% 
@@ -2374,6 +2749,8 @@ dd<-Data %>%                                           # Weighted mean by group
 Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
                           study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
                            study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 ggstatsplot:::centrality_ggrepel(
   data = Data,
@@ -2386,10 +2763,11 @@ ggstatsplot:::centrality_ggrepel(
   centrality.point.args = list(size = 2, color = "darkred"),
   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
 )
- 
+
+
 ```
 
-
+<br><br>
 
 ```{r}
 LC_items <- Data %>%
@@ -2424,6 +2802,10 @@ a111 <- likert(LC_items_likert, grouping=Data$study_group)
 
 ```
 
+<br><br><br><br>
+
+#### Total response
+
 ```{r fig.height=6, fig.width=10,fig.align='center'}
 plot(LC_items_likert_1, 
      # Group the items alphabetically
@@ -2437,7 +2819,9 @@ plot.percents=TRUE) +ggtitle("How much has your experience at this institution c
 
 ------------------------------------------------------------------------
 
-### Study Group
+<br><br>
+
+#### Study Group
 
 ```{r fig.height=9, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,wrap=200)
@@ -2445,7 +2829,9 @@ plot(a111,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Faculty Group
+<br><br>
+
+#### Faculty Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -2461,7 +2847,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Campus Group
+<br><br>
+
+#### Campus Group
 
 ```{r fig.height=8, fig.width=10,fig.align='center'}
 #a112 <- likert(SE_items_likert, grouping=Data$Group)
@@ -2475,9 +2863,9 @@ plot(a112,include.histogram=TRUE,wrap=200)
 
 ```
 
-## Other
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### **Other**
+### Other
 
 ```{r}
 dd<-Data %>% dplyr::summarise(across(starts_with("t1") , ~ round(mean(.x, na.rm = TRUE),1)))
@@ -2506,9 +2894,11 @@ gt() %>%
 
 ```
 
- 
+<br>
 
 ------------------------------------------------------------------------
+
+<br><br>
 
 ```{r}
 
@@ -2533,11 +2923,9 @@ t1_career_2="You have received supportive feedback from faculty, career advisers
 
 ```
 
+#### Overall Evaluation
 
-
-
-### Overall Evaluation - WORK IN PROGRESS
-##### The following questions provide you with an opportunity to comment on the overall academic experience at your institution.
+#### The following questions provide you with an opportunity to comment on the overall academic experience at your institution.
 
 ```{r fig.height=1.5, fig.width=10,fig.align='center'}
 evalexpres <- Data %>%
@@ -2582,6 +2970,9 @@ plot.percents=TRUE)
 
 
 ```
+
+<br><br>
+
 ```{r fig.height=1.5, fig.width=10,fig.align='center'}
 
 
@@ -2625,7 +3016,10 @@ plot.percent.high = FALSE,
 plot.percents=TRUE)
 ```
 
-### Career
+<br><br>
+
+#### Career
+
 ```{r carrer, fig.height=2, fig.width=10,fig.align='center'}
 Data$study_group <- factor(Data$study_group, levels = c("Y1", "YF", "PGT"))
 
@@ -2652,7 +3046,9 @@ plot.percents=TRUE) +ggtitle("To what extent do the following apply to you?")
 
 ------------------------------------------------------------------------
 
-### Career Study Group
+<br><br>
+
+#### Career Study Group
 
 ```{r fig.height=4, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=F,wrap=200)
@@ -2660,7 +3056,9 @@ plot(a111,include.histogram=F,wrap=200)
 
 ------------------------------------------------------------------------
 
-### Confidence
+<br><br>
+
+#### Confidence
 
 ```{r fig.height=4, fig.width=10,fig.align='center'}
 
@@ -2700,7 +3098,9 @@ plot.percents=TRUE) +ggtitle("How much confidence do you have in your ability to
 
 ```
 
-### Confidence Study Group
+<br><br>
+
+#### Confidence Study Group
 
 ```{r fig.height=6, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=F,wrap=200)
@@ -2708,7 +3108,9 @@ plot(a111,include.histogram=F,wrap=200)
 
 ------------------------------------------------------------------------
 
-### plan 
+<br><br>
+
+#### plan
 
 ```{r fig.height=5, fig.width=10,fig.align='center'}
 
@@ -2770,14 +3172,17 @@ plot.percents=TRUE) +ggtitle("Which of the following have you done, or do you pl
 
 ```
 
-### Plan Study Group
+<br><br>
+
+#### Plan Study Group
 
 ```{r fig.height=7, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=F,wrap=200)
 ```
 
+<br><br>
 
-```{r text mining, fig.align="center", fig.height=5, fig.width=10, echo=FALSE, message=FALSE, warning=FALSE}
+```{r text mining, eval=FALSE, fig.align="center", fig.height=5, fig.width=10, message=FALSE, warning=FALSE, include=FALSE}
 Question<-"improve_how"
 Q39<-Data  %>%  
   filter( !is.na(`improve_how`)) %>% select(QI,`study_group`,`improve_how`)
@@ -2852,3 +3257,47 @@ subtitle="Only words appearing more than 10 times are counted. Displaying Questi
 
 ```
 
+<br><br>
+
+```{r eval=FALSE, include=FALSE}
+
+  High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
+     Response_boxplot<-Data %>%
+        select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
+        filter( sex==c(1,2))
+
+
+dd<-Data %>%                                           # Weighted mean by group
+  group_by(study_group) %>% 
+   dplyr::summarise(a=weighted.mean(HO, Weighting_var, na.rm = TRUE)) 
+Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group=="PGT"],
+                          study_group =="Y1" ~ dd$a[dd$study_group=="Y1"],
+                           study_group =="YF" ~ dd$a[dd$study_group=="YF"]))
+
+
+
+a<-ggplot(Response_boxplot, aes(x=study_group, y=HO, fill=study_group)) +
+  geom_violin(width = 0.5,
+                             alpha = 0.6)+
+  geom_boxplot(width = 0.1,
+        alpha = 0.9,
+        geom  = "boxplot", fill="white") +
+      geom_jitter(width = 0.25, height = 0.5, alpha=0.05)+
+  geom_signif(test = "wilcox.test",comparisons = list(c("Y1","YF"),c("Y1","PGT"),c("PGT","YF")), map_signif_level=TRUE, y_position = c(65,70, 75))+ theme_classic() + labs(title = "Comparison between study groups", caption = "Test used: Wilcox test")+    theme(legend.position="right") 
+
+
+
+library(ggstatsplot)
+ggstatsplot:::centrality_ggrepel(
+  data = Data,
+  plot = a,
+  x = study_group,
+  y = wmean,
+  k=1L,
+    centrality.path = FALSE,
+  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+  centrality.point.args = list(size = 2, color = "darkred"),
+  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+)
+
+```

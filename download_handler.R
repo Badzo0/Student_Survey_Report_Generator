@@ -17,7 +17,8 @@ parameters <- reactive({
   if (input$selectreport =="Student_Survey_2021_Indicators") {
     list(n = input$file1$datapath,
          obs=input$obs)}else if(input$selectreport =="Student_Survey_2022"){list(n = input$file1$datapath,
-                                                                                 obs=input$obs)}else{
+                                                                                 obs=input$obs,
+                                                                                 avgr=input$seleccompare)}else{
                                                                                    list(n = input$file1$datapath,
                                                                                         course=input$inSelect)}
 })

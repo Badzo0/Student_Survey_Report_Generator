@@ -44,6 +44,8 @@ shinyUI(tagList(
                                   c(""), options = list(`actions-box` = TRUE,liveSearch =T),multiple = T),
                       pickerInput("selectreport", "Select Report",
                                   c("Student_Survey_2021_Indicators","Student_Survey_2022","Course_report"),multiple = F),
+                      pickerInput("seleccompare", "Select Comparison",
+                                  c("All StudentSurvey.ie","StudentSurvey.ie Universities","StudentSurvey.ie Technological Higher Education Institutions","StudentSurvey.ie Other Institutions"),multiple = F),
                       numericInput("obs", "Number of N-grams (Qualitative):", 4, min = 1, max = 50),
                       downloadButton("report", "Download Report"),
                       
@@ -60,6 +62,7 @@ shinyUI(tagList(
                         column(2),
                         column(8,
                                reactableOutput("table1"),
+                             # reactableOutput("table2"),  #111111111
                                column(2))),
                       
                       tags$br(),

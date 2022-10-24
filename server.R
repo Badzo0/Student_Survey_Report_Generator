@@ -129,9 +129,28 @@ shinyServer(function(input, output, session) {
     
     
     
+  
     
     
     
+    
+    
+     
+    
+    
+    
+    
+    
+    # output$table2 <- renderReactable({
+    #   avgr=data.frame(0)
+    #   ifelse(input$seleccompare=="All StudentSurvey.ie",avgr<-StudentSurvey.ie,
+    #          ifelse(input$seleccompare=="StudentSurvey.ie Universities",avgr<-Universities,
+    #                 ifelse(input$seleccompare=="StudentSurvey.ie Technological Higher Education Institutions",avgr<-Higher.Education.Institutions,avgr<-Other.Institutions)))
+    #   
+    #   
+    #   avgr%>% reactable() 
+    #   
+    # })
     
     
 })

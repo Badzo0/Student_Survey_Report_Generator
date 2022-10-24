@@ -9,6 +9,7 @@ output:
 params:
   n: NA
   obs: NA
+  avgr: NA
 ---
 
 <!-- #  {.tabset .tabset-fade} -->
@@ -51,8 +52,6 @@ Consequently, and crucially, indicator scores cannot be combined across indicato
 
 ### Response numbers
 
-This year **2475 Undergraduate 1st year(Y1), Undergraduate final year (YF) and taught postgraduate (PGT)** students were invited to participate in the survey. We collected **790 responses (32%)** which is above the national average response rate of 28%.
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = FALSE,
@@ -79,6 +78,13 @@ library(grid)
 
 Data <- read_excel(params$n, sheet = "Data")
 ngramnum<- params$obs
+avgr<- params$avgr
+#Data <- read_excel("~/Documents/R/Projects/Annual Programme Reviews/Mary Immaculate College Data File 2022.xlsx", 
+#    sheet = "Data")
+#ngramnum=4
+#avgr="StudentSurvey.ie Universities"
+
+
 
 
     percent <- function(x, digits = 1, format = "f", ...) {
@@ -87,6 +93,171 @@ ngramnum<- params$obs
 
 
 ```
+
+
+
+```{r include=FALSE}
+
+AllStudentSurvey.ie<-    data.frame(
+      stringsAsFactors = FALSE,
+                        rowname = c("CL","ET",
+                                                 "HO","LS","LC","QI","QR",
+                                                 "RI","SF","SE"),
+                                          Y1 = c(28.52,
+                                                 32.64,33.52,31.08,31.63,38.58,
+                                                 19.16,30.46,10.91,29.92),
+                                          YF = c(30.96,
+                                                 31.76,34.19,30.96,33.9,36.95,
+                                                 21.57,31.73,14.96,26.2),
+                                         PGT = c(28.15,
+                                                 35.59,38.26,34.9,35.02,40.05,
+                                                 22.99,35.5,15.09,28.16)
+                      )
+
+  
+Universities<-    data.frame(
+               stringsAsFactors = FALSE,
+                    rowname = c("CL","ET","HO",
+                                                      "LS","LC","QI","QR","RI",
+                                                      "SF","SE"),
+                                               Y1 = c(28.21,31.4,34.74,
+                                                      31.45,31.41,37.66,19.68,
+                                                      31.34,8.94,30.64),
+                                               YF = c(30.26,31.09,35.55,
+                                                      31.62,34.31,36.47,22.6,
+                                                      32.72,14.01,26.72),
+                                              PGT = c(28.89,35.66,38.81,
+                                                      34.98,35.26,39.89,23.34,
+                                                      36.42,15.8,28.49)
+                  )
+
+  
+  
+Higher.Education.Institutions<-   data.frame(
+                                                                                                                                                                                   stringsAsFactors = FALSE,
+                                                                                                   NA,
+                                    rowname = c("CL","ET","HO",
+                                                                                                     "LS","LC","QI",
+                                                                                                     "QR","RI","SF",
+                                                                                                     "SE"),
+                                                                                              Y1 = c(29.28,33.75,
+                                                                                                     31.86,30.22,31.68,
+                                                                                                     39.28,19.05,29.05,
+                                                                                                     13.33,29.04),
+                                                                                              YF = c(31.38,32.4,
+                                                                                                     32.99,30.39,33.53,
+                                                                                                     37.08,21.14,30.7,
+                                                                                                     15.87,25.49),
+                                                                                             PGT = c(24.89,35.23,
+                                                                                                     36.81,34.08,33.84,
+                                                                                                     39.74,21.5,33.09,
+                                                                                                     12.8,26.44)
+                                  )
+  
+  
+  
+Other.Institutions<- data.frame(
+                     stringsAsFactors = FALSE,
+                       rowname = c("CL","ET",
+                                                               "HO","LS","LC","QI",
+                                                               "QR","RI","SF",
+                                                               "SE"),
+                                                        Y1 = c(26.66,34.98,
+                                                               34.12,33.09,32.79,
+                                                               40.98,16.39,31.93,
+                                                               11.38,29.69),
+                                                        YF = c(32.14,31.49,
+                                                               34.14,30.96,33.92,
+                                                               38.69,18.65,32.79,
+                                                               14.5,27.66),
+                                                       PGT = c(28.7,35.7,
+                                                               37.41,35.51,35.34,
+                                                               41.03,23.16,34.21,
+                                                               14.61,28.73)
+                     )
+
+
+
+avga=data.frame(0)
+       ifelse(avgr=="All StudentSurvey.ie",avga<-AllStudentSurvey.ie,
+              ifelse(avgr=="StudentSurvey.ie Universities",avga<-Universities,
+                     ifelse(avgr=="StudentSurvey.ie Technological Higher Education Institutions",avga<-Higher.Education.Institutions,
+                             ifelse(avgr=="StudentSurvey.ie Other Institutions",avga<-Other.Institutions,0))))
+       
+       
+
+```
+
+```{r include=FALSE}
+StudentSurvey.ie2<-   data.frame(
+          CL = c(29.18),
+          ET = c(33.08),
+          HO = c(34.87),
+          LS = c(31.96),
+          LC = c(33.16),
+          QI = c(38.39),
+          QR = c(20.82),
+          RI = c(32.02),
+          SF = c(13.17),
+          SE = c(28.33)
+                     )
+
+
+Universities2<-  data.frame(
+          CL = c(28.93),
+          ET = c(32.64),
+          HO = c(36.21),
+          LS = c(32.57),
+          LC = c(33.35),
+          QI = c(38),
+          QR = c(21.54),
+          RI = c(33.21),
+          SF = c(12.32),
+          SE = c(28.97)
+                  )  
+
+Higher.Education.Institutions2<- data.frame(
+          CL = c(29.64),
+          ET = c(33.37),
+          HO = c(32.88),
+          LS = c(30.72),
+          LC = c(32.67),
+          QI = c(38.41),
+          QR = c(20.17),
+          RI = c(30.15),
+          SF = c(14.3),
+          SE = c(27.31)
+                                  )  
+
+
+
+Other.Institutions2<- data.frame(
+          CL = c(28.74),
+          ET = c(34.36),
+          HO = c(35.33),
+          LS = c(33.44),
+          LC = c(34.02),
+          QI = c(40.35),
+          QR = c(19.45),
+          RI = c(32.96),
+          SF = c(13.35),
+          SE = c(28.81)
+                     )
+
+
+avgm=data.frame(0)
+  ifelse(avgr=="All StudentSurvey.ie",avgm<-StudentSurvey.ie2,
+              ifelse(avgr=="StudentSurvey.ie Universities",avgm<-Universities2,
+                     ifelse(avgr=="StudentSurvey.ie Technological Higher Education Institutions",avgm<-Higher.Education.Institutions2,
+                             ifelse(avgr=="StudentSurvey.ie Other Institutions",avgm<-Other.Institutions2,0))))
+       
+
+
+
+
+```
+
+
 
 ```{r fig.align='center'}
     High_level<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%   dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
@@ -130,10 +301,10 @@ High_level<-as.data.frame(High_level)
 rownames(High_level) <- High_level$study_group
 High_level$study_group <- NULL
 transpose <- as.data.frame(t(as.matrix(High_level)))
-transpose <- transpose(High_level)
-rownames(transpose) <- colnames(High_level)
-colnames(transpose) <- rownames(High_level)
-names(transpose)<-"Score"
+#transpose <- t(High_level)
+#rownames(transpose) <- colnames(High_level)
+#colnames(transpose) <- rownames(High_level)
+colnames(transpose)<-"Score"
 #Color function
 BuYlRd <- function(x) rgb(colorRamp(c("#eb5528", "#ffffbf", "#42a145"))(x), maxColorValue = 255)
 #Create a table
@@ -179,16 +350,14 @@ names(High_level)<- c(
 )
 
 
-
-
 #Transpose
 High_level<-as.data.frame(High_level)
 rownames(High_level) <- High_level$study_group
 High_level$study_group <- NULL
 transpose <- as.data.frame(t(as.matrix(High_level)))
-transpose <- transpose(High_level)
-rownames(transpose) <- colnames(High_level)
-colnames(transpose) <- rownames(High_level)
+#transpose <- transpose(High_level)
+#rownames(transpose) <- colnames(High_level)
+#colnames(transpose) <- rownames(High_level)
 
 
 #Color function
@@ -219,7 +388,7 @@ reactable(
 
 ### Comparisons to national average
 
-Comparing MIC to the national average of all Universities (excluding IOT's and Other institutions).
+Comparing the institution to the national average.
 
 ```{r fig.height=5, fig.width=12}
 
@@ -267,24 +436,10 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
   #              18.94595,24.90012,18.94595)
   # )
   # 
-  avg<- data.frame(
-    stringsAsFactors = FALSE,
-    rowname = c("HO", "RI", "QR", "LS", "CL", "SF", "ET", "QI", "SE"),
-    PGT = c(38.6, 33.9, 21.6, 34.4, 24.6, 12.3, 34.7, 31.7, 23.2),
-    YF = c(34.2, 31.7, 21.7, 30.9, 31.0, 15.1, 31.8, 36.9, 23.5),
-    Y1 = c(33.5, 28.6, 17.5, 30.6, 23.6, 8.1, 32.9, 29.5, 24.8)
-  )
   
   
-  avg<-data.frame(
-    stringsAsFactors = FALSE,
-    rowname = c("HO", "RI", "QR", "LS", "CL", "SF", "ET", "QI", "SE","LC"),
-            Y1 = c(33.53,30.45,19.24,31.06,28.49,10.9,
-                   32.6,38.54,29.91,31.59),
-            YF = c(34.21,31.71,21.71,30.96,30.96,
-                   15.05,31.79,36.89,26.21,33.9),
-           PGT = c(38.24,35.48,23.05,34.86,28.17,15.08,35.54,40.02,28.23,35.02)
-  )
+ avg<- avga
+  
   
   
   
@@ -335,39 +490,24 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
   df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
     #df3<-column_to_rownames(df3, "study_group")
   #avg<-spread(avg,rowname, value2) %>%select(-name)%>% summarise_all(mean)%>% round(0)
-  
-  
-  
-  
-  avg<-  data.frame(
-          HO = c(34.88),
-          RI = c(32.01),
-          QR = c(20.92),
-          LS = c(31.94),
-          CL = c(29.17),
-          SF = c(13.18),
-          ET = c(33.06),
-          QI = c(38.35),
-          SE = c(28.35),
-          LC = c(33.14)
-  )
+
+  avg<-avgm
   
   df3<-data.frame(rbind(rep(60, 10), rep(0, 10),avg,
                         df3 ))%>% round(0)
-   names(df3)<- c(
-    HO="Higher-Order Learning",
-    RI="Reflective and Integrative Learning",
-    QR="Quantitative Reasoning",
-    LS="Learning Strategies",
-    CL="Collaborative Learning",
-    SF="Student-Faculty Interaction",
-    ET="Effective Teaching Practices",
-    QI="Quality of Interactions",
-    SE="Supportive Environment",
-    LC="Learning, Creative and Social Skills"
-
-    
-  )
+  
+ df3<- df3 %>% dplyr::rename("Higher-Order Learning"=HO,
+    "Reflective and Integrative Learning"=RI,
+    "Quantitative Reasoning"=QR,
+    "Learning Strategies"=LS,
+    "Collaborative Learning"=CL,
+    "Student-Faculty Interaction"=SF,
+    "Effective Teaching Practices"=ET,
+    "Quality of Interactions"=QI,
+    "Supportive Environment"=SE,
+    "Learning, Creative and Social Skills"=LC)
+  
+  
 
   # Produce a radar-chart
   radarchart(
@@ -388,6 +528,10 @@ High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_va
 <br><br>
 
 ```{r eval=FALSE, fig.height=12, fig.width=12, include=FALSE}
+
+
+  
+
 
   df3<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>% dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
     #df3<-column_to_rownames(df3, "study_group")
@@ -659,7 +803,7 @@ plot1<- ggplot(aa) +
   theme_minimal()+geom_text( position = position_dodge(width = .9),    # move to center of bars
               vjust = -0.5,    # nudge above top of bar
               size = 3) +theme(axis.text.x = element_text( hjust = 1,
-                           size = 10, angle = 65))+scale_y_continuous(limits=c(0,170))+xlab("Withdraval")
+                           size = 10, angle = 65))+scale_y_continuous(limits=c(0,max(aa$n)+10))+xlab("Withdraval")
 
 
 
@@ -809,18 +953,17 @@ These questions explore students' perceptions of how much an institution emphasi
 ```{r}
 
 
-
 dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
+df_t <- as.data.frame( t(dd))
 #redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+#rownames(df_t) <- colnames(dd)
+#colnames(df_t) <- rownames(dd)
+#colnames(df_t)<-"Score"
+#df_t<-rownames_to_column(df_t,"Names")
+#df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
 
 
 df_t%>%
@@ -844,6 +987,8 @@ gt() %>%
 
 ```{r fig.align ='center'}
 library(ggsignif)
+#library(ggstatsplot)
+library(ggrepel)
   High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%
         select(Weighting_var, "study_group","sex","courseCd","HO","RI","QR","LS","CL","SF","ET","QI","SE")%>%
@@ -869,18 +1014,38 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-library(ggstatsplot)
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(SE,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# library(ggstatsplot)
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 ```
 
 ```{r}
@@ -937,7 +1102,7 @@ plot(SE_items_likert_1,
 plot.percent.low = FALSE,
 legend.position = "right",
 #legend = "",
-center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+center=2.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
 plot.percent.high = FALSE,
 plot.percents=TRUE) 
 
@@ -954,7 +1119,7 @@ plot.percents=TRUE)
 
 ```{r fig.height=10, fig.width=10,fig.align='center',error=TRUE}
 plot(a111,include.histogram=TRUE,
-     center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+     center=2.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
      wrap=200)
 ```
 
@@ -970,7 +1135,7 @@ plot(a111,include.histogram=TRUE,
 a112 <- likert(SE_items_likert, grouping=Data$AcUnit1)
 
 plot(a112,
-     center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+     center=2.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
 
      include.histogram=TRUE,wrap=200)
 
@@ -991,7 +1156,7 @@ plot(a112,
 a112 <- likert(SE_items_likert, grouping=Data$AcUnit2)
 
 plot(a112,
-     center=1.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
+     center=2.5,  #CHANGE THIS TO 2 IF YOU WOULD LIKE TO HAVE SOME AS NEGATIVE
      include.histogram=TRUE,wrap=200)
 
 
@@ -1019,18 +1184,13 @@ Data %>%
 These questions explore students' opportunities to develop their skills to reason quantitatively -- to evaluate, support or critique arguments using numerical and statistical information.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("QR") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
 
 
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
 
+df_t <- as.data.frame( t(dd))
 df_t%>%
 gt() %>%
   data_color(
@@ -1078,18 +1238,38 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-library(ggstatsplot)
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(QR,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# library(ggstatsplot)
+# ggstatsplot::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 ```
 
@@ -1217,18 +1397,11 @@ Data %>%
 These questions explore the extent to which students interact with academic staff. Interactions with academic staff can positively influence cognitive growth, development and persistence of students.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("SF") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
-
+df_t <- as.data.frame( t(dd))
 df_t%>%
 gt() %>%
   data_color(
@@ -1275,17 +1448,38 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(SF,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+
+# 
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 
@@ -1415,17 +1609,11 @@ Data %>%
 These questions explore the extent to which students collaborate with peers to solve problems or to master difficult material, thereby deepening their understanding
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("CL") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%
@@ -1474,17 +1662,38 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(CL,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 ```
@@ -1612,18 +1821,11 @@ Data %>%
 These questions explore student experiences of supportive relationships with a range of other people and roles on campus, thereby contributing to students' ability to find assistance when needed and to learn from and with those around them. Not applicable is available as a response option. 'Not applicable' responses have been removed from these results.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("QI") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
-
+df_t <- as.data.frame( t(dd))
 df_t%>%
 gt() %>%
   data_color(
@@ -1671,17 +1873,39 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(QI,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 ```
@@ -1813,17 +2037,11 @@ Data %>%
 These questions explore the extent to which students' work emphasises challenging cognitive tasks, such as application, analysis, judgement, and synthesis.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("HO") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%
@@ -1874,18 +2092,39 @@ a<-ggplot(Response_boxplot, aes(x=study_group, y=HO, fill=study_group)) +
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
 
-library(ggstatsplot)
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(HO,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# library(ggstatsplot)
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 ```
 
@@ -2001,17 +2240,11 @@ plot(a112,include.histogram=TRUE,wrap=200)
 These questions explore the extent to which students relate their own understanding and experiences to the learning content being used.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("RI") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%
@@ -2060,17 +2293,39 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(RI,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 ```
@@ -2184,17 +2439,11 @@ plot(a112,include.histogram=TRUE,wrap=200)
 These questions explore the extent to which students actively engage with and analyse course material, rather than approaching learning passively.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("LS") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%
@@ -2243,17 +2492,37 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(LS,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 ```
@@ -2361,17 +2630,11 @@ plot(a112,include.histogram=TRUE,wrap=200)
 These questions explore the extent to which students experience teaching practices that contribute to promoting comprehension and learning.
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("ET") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%
@@ -2420,17 +2683,38 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(ET,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 ```
@@ -2547,17 +2831,11 @@ Data %>%
 ### Learning creative and Social skills
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("LC") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%
@@ -2606,17 +2884,38 @@ Data<- Data %>% mutate(wmean=case_when(study_group =="PGT" ~ dd$a[dd$study_group
 
 Data$study_group <- factor(Data$study_group, levels=c("Y1", "YF", "PGT"))
 
-ggstatsplot:::centrality_ggrepel(
-  data = Data,
-  plot = a,
-  x = study_group,
-  y = wmean,
-  k=1L,
-    centrality.path = FALSE,
-  centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
-  centrality.point.args = list(size = 2, color = "darkred"),
-  centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
-)
+
+
+a + 
+ ggrepel::geom_label_repel(
+  data = High_level,
+  mapping = aes(label = ( paste("Mean: ", round(LC,1)))),
+  fontface = 'italic',
+  fill="White",
+  size = 4,
+  nudge_x = 0.4,
+  color = 'black',
+ #inherit.aes = FALSE, #would result in "error: geom_label_repel requires the following missing aesthetics: x, y"
+  max.iter = 3e2,
+ direction = "both",
+  box.padding = 0.35,
+ alpha = 0.8,
+  point.padding = 0.5,
+  segment.color = 'grey50',
+  force = 5
+ )
+
+# ggstatsplot:::centrality_ggrepel(
+#   data = Data,
+#   plot = a,
+#   x = study_group,
+#   y = wmean,
+#   k=1L,
+#     centrality.path = FALSE,
+#   centrality.path.args = list(color = "red", size = 1, alpha = 0.5),
+#   centrality.point.args = list(size = 2, color = "darkred"),
+#   centrality.label.args = list(size = 3, nudge_x = 0.4, segment.linetype = 4)
+# )
 
 
 ```
@@ -2722,17 +3021,11 @@ plot(a112,include.histogram=TRUE,wrap=200)
 ### Other
 
 ```{r}
-dd<-Data %>% dplyr::summarise(across(starts_with("t1") , ~ round(mean(.x, na.rm = TRUE),1)))
+dd<-Data %>% dplyr::summarise(across(starts_with("SE") & ends_with("h"), ~ round(mean(.x, na.rm = TRUE),1)))
+rownames(dd)<-"Score"
 
 
-
-df_t <- transpose(dd)
-#redefine row and column names
-rownames(df_t) <- colnames(dd)
-colnames(df_t) <- rownames(dd)
-colnames(df_t)<-"Score"
-df_t<-rownames_to_column(df_t,"Names")
-df_t$Names = substr(df_t$Names,1,nchar(df_t$Names)-1)
+df_t <- as.data.frame( t(dd))
 
 df_t%>%
 gt() %>%

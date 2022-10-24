@@ -79,11 +79,6 @@ library(grid)
 Data <- read_excel(params$n, sheet = "Data")
 ngramnum<- params$obs
 avgr<- params$avgr
-#Data <- read_excel("~/Documents/R/Projects/Annual Programme Reviews/Mary Immaculate College Data File 2022.xlsx", 
-#    sheet = "Data")
-#ngramnum=4
-#avgr="StudentSurvey.ie Universities"
-
 
 
 

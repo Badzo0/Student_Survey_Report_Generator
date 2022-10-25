@@ -638,7 +638,7 @@ Q39_bigrams_united <- Q39_bigrams_filtered %>% filter(!is.na(word1)) %>%
 
 set.seed(2017)
 Q39_bigram_graph <- Q39_bigram_counts %>%
-  filter(n > 2 & !is.na(word1)) %>%
+  filter(n > ngramnum & !is.na(word1)) %>%
   graph_from_data_frame()
 a<-ggraph(Q39_bigram_graph, layout = "fr") +
   geom_edge_link() +
@@ -724,7 +724,7 @@ Q39_bigrams_united <- Q39_bigrams_filtered %>% filter(!is.na(word1)) %>%
 
 set.seed(2017)
 Q39_bigram_graph <- Q39_bigram_counts %>%
-  filter(n > 2 & !is.na(word1)) %>%
+  filter(n > ngramnum & !is.na(word1)) %>%
   graph_from_data_frame()
 a<-ggraph(Q39_bigram_graph, layout = "fr") +
   geom_edge_link() +
@@ -892,7 +892,7 @@ Q39_bigrams_united <- Q39_bigrams_filtered %>% filter(!is.na(word1)) %>%
 
 set.seed(2017)
 Q39_bigram_graph <- Q39_bigram_counts %>%
-  filter(n > 1 & !is.na(word1)) %>%
+  filter(n > ngramnum & !is.na(word1)) %>%
   graph_from_data_frame()
 a<-ggraph(Q39_bigram_graph, layout = "fr") +
   geom_edge_link() +

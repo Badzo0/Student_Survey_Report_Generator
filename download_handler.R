@@ -20,7 +20,8 @@ parameters <- reactive({
                                                                                  obs=input$obs,
                                                                                  avgr=input$seleccompare)}else{
                                                                                    list(n = input$file1$datapath,
-                                                                                        course=input$inSelect)}
+                                                                                        course=input$inSelect,
+                                                                                        avgr=input$seleccompare)}
 })
 
 filename <- reactive({ 

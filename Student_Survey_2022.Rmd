@@ -89,8 +89,6 @@ avgr<- params$avgr
 
 ```
 
-
-
 ```{r include=FALSE}
 
 AllStudentSurvey.ie<-    data.frame(
@@ -251,8 +249,6 @@ avgm=data.frame(0)
 
 
 ```
-
-
 
 ```{r fig.align='center'}
     High_level<-Data %>% dplyr::select(Weighting_var, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%   dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
@@ -814,7 +810,7 @@ plot1<- ggplot(aa) +
   theme_minimal()+ geom_text( position = position_dodge(width = .9),    # move to center of bars
               vjust = -0.5,    # nudge above top of bar
               size = 3)+
-    scale_y_continuous(limits=c(0,0.55),labels = scales::percent)+theme(axis.ticks.x = element_blank(),
+    scale_y_continuous(limits=c(0,max(aa2$PCT)+0.02),labels = scales::percent)+theme(axis.ticks.x = element_blank(),
         axis.text.x = element_blank(),axis.title.x=element_blank(),
         legend.position = "none")+ggtitle("Have you seriously considered withdrawing from your course?")
 
@@ -1841,7 +1837,7 @@ gt() %>%
 
 <br><br>
 
-```{r fig.align ='center'}
+```{r echo=FALSE, fig.align='center'}
 library(ggstatsplot)
   High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%

@@ -1837,7 +1837,7 @@ gt() %>%
 
 <br><br>
 
-```{r echo=FALSE, fig.align='center'}
+```{r fig.align='center'}
 library(ggstatsplot)
   High_level<-Data %>% dplyr::group_by(study_group) %>% dplyr::select(Weighting_var, study_group, "HO","RI","QR","LS","CL","SF","ET","QI","SE","LC") %>%  dplyr::summarise(across(2:11,~ weighted.mean(., Weighting_var, na.rm = TRUE))) 
      Response_boxplot<-Data %>%

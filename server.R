@@ -62,48 +62,48 @@ shinyServer(function(input, output, session) {
     
     
     
-    observeEvent(input$file1, {
-        names<-df() %>% group_by(CourseNm) %>% tally() %>% filter(n>20) %>%  select(CourseNm)
-        
-        # names <- unique(df()$CourseNm)        
-        # Method 1
-        updatePickerInput(session = session, inputId = "inSelect",
-                          choices = names)
-    }, ignoreInit = TRUE)
+    # observeEvent(input$file1, {
+    #     names<-df() %>% group_by(CourseNm) %>% tally() %>% filter(n>20) %>%  select(CourseNm)
+    #     
+    #     # names <- unique(df()$CourseNm)        
+    #     # Method 1
+    #     updatePickerInput(session = session, inputId = "inSelect",
+    #                       choices = names)
+    # }, ignoreInit = TRUE)
+    # 
     
     
     
+    # output$contents <- renderReactable({
+    #     req(input$file1)
+    #     tryCatch(
+    #         {
+    #             #browser()
+    #             #df <-  read_excel(input$file1$datapath, sheet = "Data")
+    #             showTab(inputId = "tabs", target = "Supportive Environment")
+    #             showTab(inputId = "tabs", target = "Quantitative Reasoning")
+    #             showTab(inputId = "tabs", target = "Quality of Interactions")
+    #             if(is.null(input$inSelect)==T ) Data=df()
+    #             else Data= df() %>%  filter(CourseNm %in% input$inSelect )
+    #             Data %>% group_by(study_group) %>% dplyr::summarise(n=n()) %>% 
+    #                 reactable()
+    #         },
+    #         error = function(e) {
+    #             # return a safeError if a parsing error occurs
+    #             stop(safeError(e))
+    #         }
+    #     )
+    #     
+    # })
     
-    output$contents <- renderReactable({
-        req(input$file1)
-        tryCatch(
-            {
-                #browser()
-                #df <-  read_excel(input$file1$datapath, sheet = "Data")
-                showTab(inputId = "tabs", target = "Supportive Environment")
-                showTab(inputId = "tabs", target = "Quantitative Reasoning")
-                showTab(inputId = "tabs", target = "Quality of Interactions")
-                if(is.null(input$inSelect)==T ) Data=df()
-                else Data= df() %>%  filter(CourseNm %in% input$inSelect )
-                Data %>% group_by(study_group) %>% dplyr::summarise(n=n()) %>% 
-                    reactable()
-            },
-            error = function(e) {
-                # return a safeError if a parsing error occurs
-                stop(safeError(e))
-            }
-        )
-        
-    })
     
-    
-    output$contents2 <- renderReactable({
-        if(is.null(input$inSelect)==T ) Data=df()
-        else Data= df() %>%  dplyr::filter(CourseNm %in% input$inSelect )
-        Data %>% tally() %>% reactable() 
-        
-    })
-    
+    # output$contents2 <- renderReactable({
+    #     if(is.null(input$inSelect)==T ) Data=df()
+    #     else Data= df() %>%  dplyr::filter(CourseNm %in% input$inSelect )
+    #     Data %>% tally() %>% reactable() 
+    #     
+    # })
+    # 
     
     
     
@@ -117,15 +117,15 @@ shinyServer(function(input, output, session) {
     #if (is.null(df)) {
     # }else   {
     #----------High Level Indicators-----------
-    source('High_level_Indicators.R', local = TRUE)
-    
-    #--------Supportive Environment--------
-    source('Supportive_environment.R', local = TRUE)
-    #--------Quantitative Reasoning--------
-    source('Quantitative_reasoning.R', local = TRUE)    
-    #--------Quality of interactions--------
-    source('Quality_of_interactions.R', local = TRUE)    
-    #})
+    # source('High_level_Indicators.R', local = TRUE)
+    # 
+    # #--------Supportive Environment--------
+    # source('Supportive_environment.R', local = TRUE)
+    # #--------Quantitative Reasoning--------
+    # source('Quantitative_reasoning.R', local = TRUE)    
+    # #--------Quality of interactions--------
+    # source('Quality_of_interactions.R', local = TRUE)    
+    # #})
     
     
     

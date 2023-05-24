@@ -40,10 +40,10 @@ shinyUI(tagList(
                                 accept = c(".xlsx")),
                       
                       useWaitress(color = "#F4DD77"),
-                      pickerInput("inSelect", "Select input",
-                                  c(""), options = list(`actions-box` = TRUE,liveSearch =T),multiple = T),
+                      # pickerInput("inSelect", "Select input",
+                      #             c(""), options = list(`actions-box` = TRUE,liveSearch =T),multiple = T),
                       pickerInput("selectreport", "Select Report",
-                                  c("Student_Survey_2021_Indicators","Student_Survey_2022","Course_report"),multiple = F),
+                                  c("Student_Survey_2021_Indicators","Student_Survey_2022","Student_Survey_2023","Course_report"),multiple = F),
                       pickerInput("seleccompare", "Select Comparison",
                                   c("All StudentSurvey.ie","StudentSurvey.ie Universities","StudentSurvey.ie Technological Higher Education Institutions","StudentSurvey.ie Other Institutions"),multiple = F),
                       numericInput("obs", "Number of N-grams (Qualitative):", 4, min = 1, max = 50),
@@ -51,6 +51,16 @@ shinyUI(tagList(
                       
                       # Horizontal line ----
                       tags$hr(),
+                      
+                      em("24/5/2023 - Updates"),
+                      br("- Added 2023 report"),
+                      div("- Changed violin charts to boxplots"),
+                      div("- Added two topical modules (the rest will be added soon)"),
+                      p("- Updated the app due to name changes in the raw data file"),
+                      em("To-do:"),
+                      div("- the option to select which reports and graphs to run in the report"),
+                      div("- Longitudinal analysis"),
+                      textOutput("greeting"),
                       reactableOutput("contents"),
                       tags$br(),
                       reactableOutput("contents2"),
@@ -79,6 +89,7 @@ shinyUI(tagList(
                       
                       
              ),
+             
              tabPanel("Supportive Environment",
                       includeMarkdown("text/SE.Rmd"),
                       fluidRow(column(10, align="center",shinycssloaders::withSpinner(plotOutput("SE_1"),type = 3,color.background="#FFFFFF", color = "#F4DD77"))),
